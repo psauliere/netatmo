@@ -11,21 +11,23 @@ The [NetAtmo Smart Weather Station][1] is a nice weather station with an indoor 
 
 The modules themselves don't have any kind of display, so this project is an attempt to make a compact dedicated display for the NetAtmo weather station with at least indoor and outdoor temperatures, using:
 
-- a [Raspberry Pi Zero W][3] --a Raspberry Pi 3 or 4 would also work, although less compact. The Pi Zero W can be found with a soldered header if soldering is not your thing. See [here][4] or [here][5].
+- a [Raspberry Pi Zero W][3] --a Raspberry Pi 3 or 4 would also work, although less compact. The Zero W can be found with a soldered header if soldering is not your thing: it is called a [Raspberry Pi Zero WH][4]. See [here][5] or [here][6].
 
-- a [PaPiRus ePaper / eInk Screen HAT for Raspberry Pi][6]. I use the 2.7 inch screen.
+- a [PaPiRus ePaper / eInk Screen HAT for Raspberry Pi][7]. I use the 2.7 inch screen.
 
 [3]: https://www.raspberrypi.org/products/raspberry-pi-zero-w/
 
-[4]: https://uk.pi-supply.com/products/raspberry-pi-zero-w-soldered-header
+[4]: https://www.raspberrypi.org/blog/zero-wh/
 
-[5]: https://shop.pimoroni.com/products/raspberry-pi-zero-wh-with-pre-soldered-header
+[5]: https://uk.pi-supply.com/products/raspberry-pi-zero-w-soldered-header
 
-[6]: https://uk.pi-supply.com/products/papirus-epaper-eink-screen-hat-for-raspberry-pi
+[6]: https://shop.pimoroni.com/products/raspberry-pi-zero-wh-with-pre-soldered-header
 
-To be clear: I chose the PaPiRus ePaper HAT for Raspberry Pi because the [pHAT and screen for the Raspberry Pi Zero][7] are two small for my taste. Anyway, you will see that the display code is isolated so that you can easyly replace it with your own if you choose another screen.
+[7]: https://uk.pi-supply.com/products/papirus-epaper-eink-screen-hat-for-raspberry-pi
 
-[7]: https://uk.pi-supply.com/products/papirus-zero-epaper-screen-phat-pi-zero
+To be clear: I chose the PaPiRus ePaper HAT for Raspberry Pi because the [pHAT and screen for the Raspberry Pi Zero][8] are two small for my taste. Anyway, you will see that the display code is isolated so that you can easyly replace it with your own if you choose another screen.
+
+[8]: https://uk.pi-supply.com/products/papirus-zero-epaper-screen-phat-pi-zero
 
 As this is a new project (as of sept. 2019), I chose Python 3 for the code: Python 3.5.3 on Raspbian Stretch, but also works on 3.6 and 3.7.
 
@@ -37,15 +39,15 @@ Preparation
 Raspbian for the Raspberry Pi
 -----------------------------
 
-Download the [Raspbian 9 (stretch) lite (without GUI) image][8]. You may be lucky with the [latest version][9] but I advise to stick to the lite version.
+Download the [Raspbian 9 (stretch) lite (without GUI) image][11]. You may be lucky with the [latest version][12] but I advise to stick to the lite version.
 
-Copy the image on the microSD card, for instance with [etcher][10].
+Copy the image on the microSD card, for instance with [etcher][13].
 
-[8]:http://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2018-04-19/2018-04-18-raspbian-stretch-lite.zip
+[11]:http://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2018-04-19/2018-04-18-raspbian-stretch-lite.zip
 
-[9]: https://www.raspberrypi.org/downloads/raspbian/
+[12]: https://www.raspberrypi.org/downloads/raspbian/
 
-[10]: https://www.balena.io/etcher/
+[13]: https://www.balena.io/etcher/
 
 Before removing the microSD card from your computer, in the `boot` volume of the card, create an empty file named `ssh`. This is the simplest way to enable the OpenSSH server on Raspbian.
 
@@ -62,7 +64,7 @@ network={
 }
 ```
 
-Remove the microSD from the PC, insert it in the Raspberry Pi Zero and plug the power supply. The first boot should take a few minutes. It should connect to your Wifi network and you should be able to get its IP address from your router.
+Remove the microSD from the PC, insert it in the Raspberry Pi Zero W and plug the power supply. The first boot should take a few minutes. It should connect to your Wifi network and you should be able to get its IP address from your router.
 
 Connect to the device from you PC or MAC:
 
@@ -100,11 +102,13 @@ sudo python3 -m pip install -upgrade pip
 Requests Python module
 ----------------------
 
-Install the Requests module (needed to call the NetAtmo API):
+Install the [Requests][31] module (needed to call the NetAtmo API):
 
 ```
 sudo pip3 install requests
 ```
+
+[31]: https://github.com/psf/requests
 
 PaPiRus hardware setup
 ----------------------
@@ -116,7 +120,7 @@ https://www.pi-supply.com/make/papirus-assembly-tips-and-gotchas/
 PaPiRus Python module
 ---------------------
 
-IMPORTANT: On the Raspberry Pi [Zero], you need to __enable the SPI and the I2C interfaces__. You can enable them by typing `sudo raspi-config` at the command line and then selecting `Interfacing options` > `SPI` and then selecting `Enable`. Without exiting the tool still in `Interfacing options` > `I2C` and then selecting `Enable`. (from the [PaPiRus documentation](https://github.com/PiSupply/PaPiRus))
+IMPORTANT: On the Raspberry Pi [Zero W], you need to __enable the SPI and the I2C interfaces__. You can enable them by typing `sudo raspi-config` at the command line and then selecting `Interfacing options` > `SPI` and then selecting `Enable`. Without exiting the tool still in `Interfacing options` > `I2C` and then selecting `Enable`. (from the [PaPiRus documentation](https://github.com/PiSupply/PaPiRus))
 
 Then, follow the instructions here: https://github.com/PiSupply/PaPiRus
 
@@ -177,7 +181,7 @@ You need these 3 files to begin:
 
 If `config.json` does not exist, `netatmo.py` creates an empty one and you have to edit it.
 
-`config.json`: configuration file. You must edit this file with your values (see above: NetAtmo API).
+`config.json` is the configuration file. You must edit this file with your values (see above: NetAtmo API).
 
 `netatmo.py`: main module. Every 10 minutes, it calls the [NetAtmo getstationdata API][getstationdata] to get the weather station data, stores it to the `data.json` file, and calls `display.py`. Manages the authentication and refreshes the oAuth2 token according to the NetAtmo documentation.
 
@@ -207,11 +211,17 @@ Running the program
 
 > Warning: documentation is not complete.
 
-Run `./netatmo.py`, for instance in a `tmux` session to let it run event when you disconnect your SSH session.
+Run `./netatmo.py`, for instance in a `tmux` session to let it run even when you disconnect your SSH session.
 
-https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/
+On the console, you will see that:
 
-https://leanpub.com/the-tao-of-tmux/read
+ - Every 10 minutes, netatmo.py gets weather data and prints 1 line on the console with the date, time and temperatures.
+ - Every three hours, the access token expires and the program refreshes it.
+
+More on tmux:
+
+- https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/
+- https://leanpub.com/the-tao-of-tmux/read
 
 To stop the program, type Ctrl+C.
 
@@ -222,3 +232,4 @@ NetAtmo developer documentation: https://dev.netatmo.com/resources/technical/int
 
 PaPiRus documentation: https://github.com/PiSupply/PaPiRus
 
+Another NetAtmo Display project: https://github.com/bkoopman/netatmo-display
