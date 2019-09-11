@@ -45,6 +45,7 @@ Boot the Raspberry with its microSD, a keyboard and a HDMI screen to configure t
 
 Login with this user: username = `pi`, password = `raspberry`.
 
+Install the latest OS upgrades:
 
 ```
 sudo apt update
@@ -53,9 +54,6 @@ sudo reboot
 
 sudo autoremove
 ```
-
-On the Raspberry Pi [Zero], you need to enable the SPI and the I2C interfaces. You can enable the SPI by typing `sudo raspi-config` at the command line and then selecting `Interfacing options` > `SPI` and then selecting `Enable`. Without exiting the tool still in `Interfacing options` > `I2C` and then selecting `Enable`. (from [PaPiRus documentation](https://github.com/PiSupply/PaPiRus))
-
 
 Python 3
 --------
@@ -91,7 +89,42 @@ https://www.pi-supply.com/make/papirus-assembly-tips-and-gotchas/
 PaPiRus Python module
 ---------------------
 
+On the Raspberry Pi [Zero], you need to enable the SPI and the I2C interfaces. You can enable the SPI by typing `sudo raspi-config` at the command line and then selecting `Interfacing options` > `SPI` and then selecting `Enable`. Without exiting the tool still in `Interfacing options` > `I2C` and then selecting `Enable`. (from [PaPiRus documentation](https://github.com/PiSupply/PaPiRus))
+
+Then, follow the instructions here:
+
 https://github.com/PiSupply/PaPiRus
+
+or, here are the commands to use:
+
+```
+sudo apt-get install git bc i2c-tools fonts-freefont-ttf whiptail make gcc -y
+
+sudo apt-get install python3-pil python3-smbus python3-dateutil -y
+
+git clone --depth=1 https://github.com/PiSupply/PaPiRus.git
+
+cd PaPiRus
+
+sudo python3 setup.py install
+
+sudo papirus-setup
+
+sudo papirus-set 2.7
+```
+
+The last command sets the size of the screen you have.
+
+You can then test the Python API with tools present in /usr/local/bin. For instance:
+
+```
+papirus-clear
+papirus-write "Hello world!"
+papirus-test
+papirus-clock
+papirus-temp
+papirus-clear
+```
 
 NetAtmo API
 -----------
