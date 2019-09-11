@@ -1,0 +1,118 @@
+{
+    "body": {
+        "user": {
+            "administrative": {
+                "country": "EN_US",
+                "reg_locale": "en-US",
+                "unit": 0,
+                "feel_like_algo": 0,
+                "pressureunit": 0,
+                "windunit": 0,
+                "lang": "en-US"
+            },
+            "mail": "xxxxxxxx@xxxx.xxx"
+        },
+        "devices": [
+            {
+                "last_status_store": 1568112382,
+                "dashboard_data": {
+                    "date_max_temp": 1568095422,
+                    "pressure_trend": "up",
+                    "Noise": 36,
+                    "temp_trend": "stable",
+                    "time_utc": 1568112363,
+                    "AbsolutePressure": 1004,
+                    "Pressure": 1019.6,
+                    "min_temp": 20.7,
+                    "Temperature": 21.4,
+                    "max_temp": 21.6,
+                    "CO2": 399,
+                    "date_min_temp": 1568079088,
+                    "Humidity": 45
+                },
+                "type": "NAMain",
+                "firmware": 140,
+                "last_setup": 1565199638,
+                "reachable": true,
+                "modules": [
+                    {
+                        "type": "NAModule1",
+                        "firmware": 46,
+                        "last_setup": 1565199681,
+                        "rf_status": 72,
+                        "_id": "02:00:00:00:00:00",
+                        "reachable": true,
+                        "battery_vp": 6004,
+                        "module_name": "Outdoor",
+                        "dashboard_data": {
+                            "date_max_temp": 1568112344,
+                            "min_temp": 9.9,
+                            "temp_trend": "up",
+                            "Temperature": 18.9,
+                            "max_temp": 18.9,
+                            "date_min_temp": 1568094194,
+                            "time_utc": 1568112344,
+                            "Humidity": 48
+                        },
+                        "data_type": [
+                            "Temperature",
+                            "Humidity"
+                        ],
+                        "battery_percent": 100,
+                        "last_message": 1568112376,
+                        "last_seen": 1568112344
+                    },
+                    {
+                        "type": "NAModule3",
+                        "firmware": 8,
+                        "last_setup": 1565205759,
+                        "rf_status": 78,
+                        "_id": "05:00:00:00:00:00",
+                        "reachable": true,
+                        "battery_vp": 6090,
+                        "module_name": "Raingauge",
+                        "dashboard_data": {
+                            "Rain": 0,
+                            "sum_rain_1": 0,
+                            "time_utc": 1568112363,
+                            "sum_rain_24": 0
+                        },
+                        "data_type": [
+                            "Rain"
+                        ],
+                        "battery_percent": 100,
+                        "last_message": 1568112376,
+                        "last_seen": 1568112376
+                    }
+                ],
+                "module_name": "Indoor",
+                "co2_calibrating": false,
+                "place": {
+                    "country": "FR",
+                    "city": "Paris",
+                    "altitude": 50,
+                    "timezone": "Europe/Paris",
+                    "location": [
+                        2.2069758,
+                        48.858774
+                    ]
+                },
+                "data_type": [
+                    "Temperature",
+                    "CO2",
+                    "Humidity",
+                    "Noise",
+                    "Pressure"
+                ],
+                "wifi_status": 66,
+                "last_upgrade": 1565199641,
+                "_id": "70:ee:50:00:00:00",
+                "station_name": "Netatmo",
+                "date_setup": 1565199638
+            }
+        ]
+    },
+    "time_exec": 0.07671213150024414,
+    "status": "ok",
+    "time_server": 1568112894
+}
