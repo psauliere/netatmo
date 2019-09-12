@@ -96,7 +96,6 @@ $ python3 -V
 Install pip for python3:
 ```
 sudo apt install python3-pip
-sudo python3 -m pip install -upgrade pip
 ```
 
 Requests Python module

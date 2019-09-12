@@ -74,7 +74,7 @@ def authenticate():
         sys.exit(1)
 
 def refresh_token():
-    """API token refresh. Result: g_token and JSON file."""
+    """NetAtmo API token refresh. Result: g_token and JSON file."""
     global g_token
     global g_config
     payload = {
@@ -100,7 +100,7 @@ def refresh_token():
         print(nowstr(), e)
 
 def get_station_data():
-    """Get Netatmo weather station data. Result:  g_data and JSON file."""
+    """Gets Netatmo weather station data. Result: g_data and JSON file."""
     global g_token
     global g_config
     global g_data
@@ -128,7 +128,7 @@ def get_station_data():
         print(nowstr(), e)
 
 def display():
-    """Display weather data. Input: g_data"""
+    """Displays weather data. Input: g_data"""
     global g_data
     # console
     if "body" in g_data:
@@ -136,9 +136,9 @@ def display():
         indoor = device["dashboard_data"]
         outdoor = device["modules"][0]["dashboard_data"]
         rain = device["modules"][1]["dashboard_data"]
-        displaystr = "Indoor " + str(indoor["Temperature"]) + "°C | "
-        displaystr += "Outdoor " + str(outdoor["Temperature"]) + "°C | "
-        displaystr += "Rain " + str(rain["Rain"]) + "mm"
+        displaystr = "Indoor " + str(indoor["Temperature"]) + " | "
+        displaystr += "Outdoor " + str(outdoor["Temperature"]) + " | "
+        displaystr += "Rain " + str(rain["Rain"])
         print(nowstr(), "|", displaystr)
     # external display - from data in data.json
     if os.path.isfile('./display.py'):
@@ -149,7 +149,7 @@ def main():
     global g_token
     global g_config
     global g_data
-    print("netatmo.py v0.10 2019-09-11")
+    print("netatmo.py v0.11 2019-09-13")
 
     # read config
     if os.path.isfile(config_filename):
@@ -178,8 +178,10 @@ def main():
         get_station_data()
         display()
         try:
+            # sleep 10 minutes
             time.sleep(600)
         except KeyboardInterrupt:
+            # Crtl+C
             print(nowstr(), "Keyboard exception received. Exiting.")
             sys.exit()
 

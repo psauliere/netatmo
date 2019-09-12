@@ -83,17 +83,27 @@ def main():
         sys.exit(1)
 
     # extract data
+    user_admin = g_data["body"]["user"]["administrative"]
     device = g_data["body"]["devices"][0]
     #place = device["place"]
     indoor = device["dashboard_data"]
     outdoor = device["modules"][0]["dashboard_data"]
     rain = device["modules"][1]["dashboard_data"]
 
-    # get values
+    # Units
+    # see https://dev.netatmo.com/en-US/resources/technical/reference/weather/getstationsdata
+    # for details
+    unit_temp = ['°C', '°F'][user_admin["unit"]]
+    unit_rain = ['mm/h', 'in/h'][user_admin["unit"]]
+    # Uncomment if needed
+    #unit_wind = ['kph', 'mph', 'm/s', 'beaufort', 'knot'][user_admin["windunit"]]
+    #unit_pressure = ['mbar', 'inHg', 'mmHg'][user_admin["pressureunit"]]
+
+    # get and format values
     data_time_str = datetimestr(g_data["time_server"])
-    indoor_temp_str = '{0:.2f}'.format(indoor["Temperature"]) + '°C' + trend_symbol(indoor["temp_trend"])
-    outdoor_temp_str = '{0:.2f}'.format(outdoor["Temperature"]) + '°C' + trend_symbol(outdoor["temp_trend"])
-    rain_str = '{0:.2f}'.format(rain["Rain"]) + 'mm/h'
+    indoor_temp_str = '{0:.2f}'.format(indoor["Temperature"]) + unit_temp + trend_symbol(indoor["temp_trend"])
+    outdoor_temp_str = '{0:.2f}'.format(outdoor["Temperature"]) + unit_temp + trend_symbol(outdoor["temp_trend"])
+    rain_str = '{0:.1f}'.format(rain["Rain"]) + unit_rain
 
     # center the temperatures
     #(txtwidth, txtheight) = draw.textsize(indoor_temp_str, font=font_temp)
@@ -107,18 +117,11 @@ def main():
     if width_rain > txtwidth:
         txtwidth = width_rain
 
-    #print("txtwidth:", txtwidth)
-    #print("width_indoor:", width_indoor)
-    #print("width_outdoor:", width_outdoor)
-
     x = int((width - txtwidth) / 2)
     y = int((height - 3*txtheight - 10) / 2)
 
     draw.rectangle((2, 2, width - 2, height - 2), fill=WHITE, outline=BLACK)
 
-    #draw.text((x + txtwidth - width_indoor, y), indoor_temp_str, fill=BLACK, font=font_temp)
-    #draw.text((x + txtwidth - width_outdoor, y + txtheight + 5), outdoor_temp_str, fill=BLACK, font = font_temp)
-    #draw.text((x + txtwidth - width_rain, y + 2*txtheight + 10), rain_str, fill=BLACK, font = font_temp)
     draw.text((x, y), indoor_temp_str, fill=BLACK, font=font_temp)
     draw.text((x, y + txtheight + 5), outdoor_temp_str, fill=BLACK, font = font_temp)
     draw.text((x, y + 2*txtheight + 10), rain_str, fill=BLACK, font = font_temp)
