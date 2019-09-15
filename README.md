@@ -27,6 +27,8 @@ The first setup I tried is this:
 
 [7]: https://uk.pi-supply.com/products/papirus-epaper-eink-screen-hat-for-raspberry-pi
 
+![Raspberry Pi Zero W and PaPiRus 2.7inch ePaper HAT](images/papirus_2in7.jpg "Raspberry Pi Zero W and PaPiRus 2.7inch ePaper HAT")
+
 Then I tried a second setup:
 
 - [Raspberry Pi 3 B+][8].
@@ -36,6 +38,8 @@ Then I tried a second setup:
 [8]: https://www.raspberrypi.org/products/raspberry-pi-3-model-b-plus/
 
 [9]: http://www.waveshare.com/2.7inch-e-paper-hat.htm
+
+![Raspberry Pi 3 B+ and Waveshare 2.7 inch ePaper Hat](images/waveshare_2in7.jpg "Raspberry Pi 3 B+ and Waveshare 2.7 inch ePaper Hat")
 
 The first setup works fine but the PaPiRus screen is not attached to the HAT board, making the thing very fragile without a suitable case. The Waveshare is well attached and the whole setup is much more robust. But on the software side, the PaPiRus has a much better story than the Waveshare. Anyway, both work as expected.
 
@@ -125,6 +129,12 @@ sudo raspi-config
 
 Select `Interfacing options` > `SPI` > `Yes`. Without exiting the tool, still in `Interfacing options`, select `I2C` > `Yes`.
 
+Reboot:
+
+```
+sudo reboot
+```
+
 Then, follow the instructions here: https://github.com/PiSupply/PaPiRus. Or, here is the short version of these instructions:
 
 ```
@@ -157,7 +167,7 @@ and the software is here :
 
 https://github.com/waveshare/e-Paper
 
-The hardware setup is very simple. Just plug the board on the 40-pin GPIO header. The software setup is documented on the wiki above, and here is the short version:
+The hardware setup is very simple. Just plug the board on the 40-pin GPIO header. The software setup is documented on the wiki above, and here is the short and simplified version:
 
 Activate the SPI interface:
 
@@ -166,6 +176,7 @@ sudo raspi-config
 ```
 
 Choose `Interfacing Options` > `SPI` > `Yes` to enable SPI interface.
+
 Reboot:
 
 ```
@@ -261,7 +272,7 @@ Files created by the program:
 
 `image.bmp`: image of the latest PaPiRus screen display, written by `display.py` Example:
 
-![Sample image](sample_image.bmp "Sample image")
+![Sample image](images/sample_image.bmp "Sample image")
 
 In this example, the display shows:
 
@@ -295,5 +306,7 @@ References
 NetAtmo developer documentation: https://dev.netatmo.com/resources/technical/introduction
 
 PaPiRus documentation: https://github.com/PiSupply/PaPiRus
+
+Waveshare 2.7inch e-Paper documentation: https://www.waveshare.com/wiki/2.7inch_e-Paper_HAT
 
 Another NetAtmo Display project: https://github.com/bkoopman/netatmo-display
