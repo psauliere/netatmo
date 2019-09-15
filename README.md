@@ -9,11 +9,13 @@ The [NetAtmo Smart Weather Station][1] is a nice weather station with an indoor 
 
 [2]: https://my.netatmo.com/app/station
 
-The modules themselves don't have any kind of display, so this project is an attempt to make a compact dedicated display for the NetAtmo weather station with at least indoor and outdoor temperatures, using:
+The modules themselves don't have any kind of display, so this project is an attempt to make a compact dedicated display for the NetAtmo weather station with at least indoor and outdoor temperatures, using a Raspberry Pi and a e-Paper screen.
 
-- a [Raspberry Pi Zero W][3] --a Raspberry Pi 3 or 4 would also work, although less compact. The Zero W can be found with a soldered header if soldering is not your thing: it is called a [Raspberry Pi Zero WH][4]. See [here][5] or [here][6].
+The first setup I tried is this:
 
-- a [PaPiRus ePaper / eInk Screen HAT for Raspberry Pi][7]. I use the 2.7 inch screen.
+- [Raspberry Pi Zero W][3]. The Zero W can be found with a soldered header if soldering is not your thing: it is called a [Raspberry Pi Zero WH][4]. See [here][5] or [here][6].
+
+- [PaPiRus ePaper / eInk Screen HAT for Raspberry Pi][7]. I use the 2.7 inch screen.
 
 [3]: https://www.raspberrypi.org/products/raspberry-pi-zero-w/
 
@@ -25,21 +27,27 @@ The modules themselves don't have any kind of display, so this project is an att
 
 [7]: https://uk.pi-supply.com/products/papirus-epaper-eink-screen-hat-for-raspberry-pi
 
-To be clear: I chose the PaPiRus ePaper HAT for Raspberry Pi because the [pHAT and screen for the Raspberry Pi Zero][8] are two small for my taste. Anyway, you will see that the display code is isolated so that you can easyly replace it with your own if you choose another screen.
+Then I tried a second setup:
 
-[8]: https://uk.pi-supply.com/products/papirus-zero-epaper-screen-phat-pi-zero
+- [Raspberry Pi 3 B+][8].
 
-As this is a new project (as of sept. 2019), I chose Python 3 for the code: Python 3.5.3 on Raspbian Stretch, but also works on 3.6 and 3.7.
+- [Waveshare 2.7inch e-Paper HAT][9].
+
+[8]: https://www.raspberrypi.org/products/raspberry-pi-3-model-b-plus/
+
+[9]: http://www.waveshare.com/2.7inch-e-paper-hat.htm
+
+The first setup works fine but the PaPiRus screen is not attached to the HAT board, making the thing very fragile without a suitable case. The Waveshare is well attached and the whole setup is much more robust. But on the software side, the PaPiRus has a much better story than the Waveshare. Anyway, both work as expected.
+
+As this is a new project (as of sept. 2019), I chose Python 3 for the code: Python 3.5.3 on Raspbian Stretch, 3.7.3 on Raspbian Buster.
 
 Preparation
 ===========
 
-> Warning: documentation is not complete.
-
 Raspbian for the Raspberry Pi
 -----------------------------
 
-Download the [Raspbian 9 (stretch) lite (without GUI) image][11]. You may be lucky with the [latest version][12] but I advise to stick to the lite version.
+Download the [Raspbian 9 (stretch) lite (without GUI) image][11], or the latest [Raspian 10 (buster) lite][12]. Both work, but I advise to use a _lite_ version, without a GUI.
 
 Copy the image on the microSD card, for instance with [etcher][13].
 
@@ -51,7 +59,7 @@ Copy the image on the microSD card, for instance with [etcher][13].
 
 Before removing the microSD card from your computer, in the `boot` volume of the card, create an empty file named `ssh`. This is the simplest way to enable the OpenSSH server on Raspbian.
 
-Also copy a `wpa_supplicant.conf` file to the same `boot` volume, with this content:
+Also copy a `wpa_supplicant.conf` file to the same `boot` volume, with this content (edit your country, Wifi name and password):
 
 ```
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -64,7 +72,7 @@ network={
 }
 ```
 
-Remove the microSD from the PC, insert it in the Raspberry Pi Zero W and plug the power supply. The first boot should take a few minutes. It should connect to your Wifi network and you should be able to get its IP address from your router.
+Remove the microSD from the PC, insert it in the Raspberry Pi and plug the power supply. The first boot should take a few minutes. It should connect to your Wifi network and you should be able to get its IP address from your router.
 
 Connect to the device from you PC or MAC:
 
@@ -76,7 +84,7 @@ The user is `pi` and the password is `raspberry`.
 
 If this doesn't work, boot the Raspberry with its microSD, a keyboard and an HDMI screen, login with the `pi` user and use the `raspi-config` utility to configure the network.
 
-One connected with SSH, install the latest OS updates:
+Once connected with SSH, install the latest OS updates, and reboot:
 
 ```
 sudo apt update
@@ -84,60 +92,48 @@ sudo apt dist-upgrade
 sudo reboot
 ```
 
-Python 3
---------
-
-Python 3 should already be installed:
+Python 3 should already be installed. You can check its version with:
 
 ```
-$ python3 -V
+python3 -V
 ```
 
-Install pip for python3:
-```
-sudo apt install python3-pip
-```
-
-Requests Python module
-----------------------
-
-Install the [Requests][31] module (needed to call the NetAtmo API):
+Install git, the Freefont TrueType fonts, pip, PIL, and the [Requests][31] module (needed to call the NetAtmo API):
 
 ```
-sudo pip3 install requests
+sudo apt install git fonts-freefont-ttf python3-pip python3-pil python3-requests
 ```
 
 [31]: https://github.com/psf/requests
 
-PaPiRus hardware setup
-----------------------
+PaPiRus setup
+-------------
 
-Documentation:
+Follow these instructions if you have a PaPiRus HAT and e-Paper screen.
+
+First, the hardware setup. Follow this documentation:
 
 https://www.pi-supply.com/make/papirus-assembly-tips-and-gotchas/
 
-PaPiRus Python module
----------------------
+Next, the Python module:
 
-IMPORTANT: On the Raspberry Pi [Zero W], you need to __enable the SPI and the I2C interfaces__. You can enable them by typing `sudo raspi-config` at the command line and then selecting `Interfacing options` > `SPI` and then selecting `Enable`. Without exiting the tool still in `Interfacing options` > `I2C` and then selecting `Enable`. (from the [PaPiRus documentation](https://github.com/PiSupply/PaPiRus))
+IMPORTANT: On the Raspberry Pi, you need to __enable both SPI and I2C interfaces__ :
 
-Then, follow the instructions here: https://github.com/PiSupply/PaPiRus
+```
+sudo raspi-config
+```
 
-or, here is the short version of these instructions:
+Select `Interfacing options` > `SPI` > `Yes`. Without exiting the tool, still in `Interfacing options`, select `I2C` > `Yes`.
+
+Then, follow the instructions here: https://github.com/PiSupply/PaPiRus. Or, here is the short version of these instructions:
 
 ```
 sudo apt-get install git bc i2c-tools fonts-freefont-ttf whiptail make gcc -y
-
 sudo apt-get install python3-pil python3-smbus python3-dateutil -y
-
 git clone --depth=1 https://github.com/PiSupply/PaPiRus.git
-
 cd PaPiRus
-
 sudo python3 setup.py install
-
 sudo papirus-setup
-
 sudo papirus-set 2.7
 ```
 
@@ -146,13 +142,82 @@ The last command sets the size of the screen you have.
 You can then test the Python API with tools present in /usr/local/bin. For instance:
 
 ```
-papirus-clear
 papirus-write "Hello world!"
-papirus-test
-papirus-clock
-papirus-temp
 papirus-clear
 ```
+
+Waveshare Setup
+---------------
+
+If you have a Waveshare 2.7inch e-Paper screen, the instructions are here:
+
+https://www.waveshare.com/wiki/2.7inch_e-Paper_HAT
+
+and the software is here :
+
+https://github.com/waveshare/e-Paper
+
+The hardware setup is very simple. Just plug the board on the 40-pin GPIO header. The software setup is documented on the wiki above, and here is the short version:
+
+Activate the SPI interface:
+
+```
+sudo raspi-config
+```
+
+Choose `Interfacing Options` > `SPI` > `Yes` to enable SPI interface.
+Reboot:
+
+```
+sudo reboot
+```
+
+Reconnect and install Python 3 libraries:
+
+```
+sudo apt-get update
+sudo apt-get install python3-pip python3-pil python3-numpy
+sudo pip3 install RPi.GPIO
+sudo pip3 install spidev
+```
+
+Download the Waveshare repo in your home dir:
+
+```
+cd
+git clone https://github.com/waveshare/e-Paper
+```
+
+(Optional) test the display:
+
+```
+cd e-Paper/RaspberryPi\&JetsonNano/python/examples
+python3 epd_2in7_test.py
+cd
+```
+
+This should display some test patterns on the Waveshare screen.
+
+Download the app!
+-----------------
+
+Download the code in your home dir:
+
+```
+cd
+git clone https://github.com/psauliere/netatmo.git
+cd netatmo
+```
+
+To test the display module, type this:
+
+```
+cp sample_data.json data.json
+./display.py
+```
+
+This should display a sample based on the sample data included in the repo.
+
 
 NetAtmo API
 -----------

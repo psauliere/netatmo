@@ -10,30 +10,26 @@ import json
 import time
 import os
 import sys
-try:
-    from papirus import Papirus
-    from PIL import Image
-    from PIL import Image
-    from PIL import ImageDraw
-    from PIL import ImageFont
-except ImportError as e:
-    print(e)
-    sys.exit(1)
+import logging
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
+
+logging.basicConfig(level=logging.WARNING)
 
 WHITE = 1
 BLACK = 0
-
-#FONT_FILE = '/usr/share/fonts/truetype/freefont/FreeMono.ttf'
+# Font file
 FONT_FILE = '/usr/share/fonts/truetype/freefont/FreeSans.ttf'
-#FONT_FILE = '/usr/share/fonts/truetype/freefont/FreeSerif.ttf'
-
-data_filename = "data.json"
-image_filename = "image.bmp"
-
+# File names
+data_filename = 'data.json'
+image_filename = 'image.bmp'
+# Global variables
 g_data = dict()
+g_image = None
 
 def datetimestr(t):
-    return time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(t))
+    return time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(t))
 
 def read_json(filename):
     """Read a JSON file to a dict object."""
@@ -55,18 +51,14 @@ def trend_symbol(trend):
     else:
         return ' '
 
-def main():
-    """Main function"""
+def draw_image():
+    """Draws the image in memory (g_image)"""
     global g_data
-    papirus = Papirus(rotation = 0)
-    #papirus.clear()
-
-    # initially set all white background
-    image = Image.new('1', papirus.size, WHITE)
+    global g_image
 
     # prepare for drawing
-    draw = ImageDraw.Draw(image)
-    width, height = image.size
+    draw = ImageDraw.Draw(g_image)
+    width, height = g_image.size
 
     # base font size on mono spaced font
     font_size_temp = int((width - 4) / (10 * 0.65))     # room for 10 chars
@@ -78,8 +70,10 @@ def main():
     if os.path.isfile(data_filename):
         g_data = read_json(data_filename)
     else:
+        logging.error("No data file")
         sys.exit(1)
     if not ("body" in g_data):
+        logging.error("Bad data format")
         sys.exit(1)
 
     # extract data
@@ -128,9 +122,47 @@ def main():
 
     draw.text((5, 5), data_time_str, fill = BLACK, font = font_time)
 
-    papirus.display(image)
-    papirus.update()
-    image.save(image_filename)
+def main():
+    """Main function"""
+    global g_image
+
+    try:
+        # *** PaPiRus ePaper / eInk Screen HAT for Raspberry Pi - 2.7" ***
+        from papirus import Papirus
+        papirus = Papirus(rotation = 0)
+        g_image = Image.new('1', papirus.size, WHITE)
+        draw_image()
+        g_image.save(image_filename)
+        papirus.display(g_image)
+        papirus.update()
+        return
+    except:
+        logging.info("Papirus failed.",exc_info=1)
+        pass
+
+    try:
+        # *** Waveshare 2.7inch e-Paper HAT ***
+        libdir = os.path.realpath(os.getenv('HOME') + '/e-Paper/RaspberryPi&JetsonNano/python/lib')
+        if os.path.exists(libdir):
+            sys.path.append(libdir)
+        from waveshare_epd import epd2in7
+        epd = epd2in7.EPD()
+        epd.init()
+        g_image = Image.new('1', (epd.height, epd.width), 255)
+        draw_image()
+        g_image.save(image_filename)
+        epd.display(epd.getbuffer(g_image))
+        epd.sleep()
+        return
+    except:
+        logging.info("Waveshare failed.",exc_info=1)
+        pass
+
+    # *** no known screen: just save the bmp
+    logging.info("No known screen.")
+    g_image = Image.new('1', (264, 176), WHITE)
+    draw_image()
+    g_image.save(image_filename)
 
 # main
 if "__main__" == __name__:
