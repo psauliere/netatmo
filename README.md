@@ -11,11 +11,11 @@ The [NetAtmo Smart Weather Station][1] is a nice weather station with an indoor 
 
 The modules themselves don't have any kind of display, so this project is an attempt to make a compact dedicated display for the NetAtmo weather station with at least indoor and outdoor temperatures, using a Raspberry Pi and a e-Paper screen.
 
-The first setup I tried is this:
+The first setup I tried is this one:
 
 - [Raspberry Pi Zero W][3]. The Zero W can be found with a soldered header if soldering is not your thing: it is called a [Raspberry Pi Zero WH][4]. See [here][5] or [here][6].
 
-- [PaPiRus ePaper / eInk Screen HAT for Raspberry Pi][7]. I use the 2.7 inch screen.
+- [PaPiRus ePaper / eInk Screen HAT for Raspberry Pi][7]. I use the 2.7 inch screen, which has a resolution of 264 x 176.
 
 [3]: https://www.raspberrypi.org/products/raspberry-pi-zero-w/
 
@@ -33,7 +33,7 @@ Then I tried a second setup:
 
 - [Raspberry Pi 3 B+][8].
 
-- [Waveshare 2.7inch e-Paper HAT][9].
+- [Waveshare 2.7inch e-Paper HAT][9], which has the same size and resolution of 264 x 176 as the PaPiRus.
 
 [8]: https://www.raspberrypi.org/products/raspberry-pi-3-model-b-plus/
 
@@ -102,13 +102,21 @@ Python 3 should already be installed. You can check its version with:
 python3 -V
 ```
 
-Install git, the Freefont TrueType fonts, pip, PIL, and the [Requests][31] module (needed to call the NetAtmo API):
+Install [git][14], the [Freefont TrueType fonts][15], [pip][16], [PIL][17], and the [Requests][18] module (needed to call the NetAtmo API):
 
 ```
 sudo apt install git fonts-freefont-ttf python3-pip python3-pil python3-requests
 ```
 
-[31]: https://github.com/psf/requests
+[14]: https://git-scm.com/
+
+[15]: http://savannah.gnu.org/projects/freefont/
+
+[16]: https://pip.pypa.io/en/stable/
+
+[17]: https://python-pillow.org/
+
+[18]: https://github.com/psf/requests
 
 PaPiRus setup
 -------------
@@ -262,7 +270,7 @@ If `config.json` does not exist, `netatmo.py` creates an empty one and you have 
 
 [getstationdata]: https://dev.netatmo.com/resources/technical/reference/weather/getstationsdata
 
-`display.py`: display module, called by `netatmo.py`every 10 minutes. It reads `data.json` and displays the data on the screen. So if you choose another screen, you just have to rewrite this file. If no PaPiRus screen is present, `display.py` does nothing, so you can run `netatmo.py` on any system with python3, with or without an ePaper screen. See below (`image.bmp`) for an example of display.
+`display.py`: display module, called by `netatmo.py` every 10 minutes. It reads `data.json` and displays the data on the screen. So if you choose another screen, or wish to change the display, you just have to adapt or rewrite this file. If no supported screen is present, `display.py` draws the image of the display into a `image.bmp` file. See below (`image.bmp`) for an example of display.
 
 Files created by the program:
 
@@ -283,8 +291,6 @@ In this example, the display shows:
 
 Running the program
 ===================
-
-> Warning: documentation is not complete.
 
 Run `./netatmo.py`, for instance in a `tmux` session to let it run even when you disconnect your SSH session.
 
