@@ -9,7 +9,6 @@ import json
 import requests
 import time
 import sys
-import os.path
 import os
 
 # JSON file names
@@ -45,7 +44,7 @@ def write_json(data, filename):
         json.dump(data, f)
 
 def authenticate():
-    """NetAtmo API authentication. Result:  g_token and JSON file."""
+    """NetAtmo API authentication. Result:  g_token and token.json file."""
     global g_token
     payload = {
         'grant_type': 'password',
@@ -74,7 +73,7 @@ def authenticate():
         sys.exit(1)
 
 def refresh_token():
-    """NetAtmo API token refresh. Result: g_token and JSON file."""
+    """NetAtmo API token refresh. Result: g_token and token.json file."""
     global g_token
     global g_config
     payload = {
@@ -100,7 +99,7 @@ def refresh_token():
         print(nowstr(), e)
 
 def get_station_data():
-    """Gets Netatmo weather station data. Result: g_data and JSON file."""
+    """Gets Netatmo weather station data. Result: g_data and data.json file."""
     global g_token
     global g_config
     global g_data
@@ -136,9 +135,12 @@ def display():
         indoor = device["dashboard_data"]
         outdoor = device["modules"][0]["dashboard_data"]
         rain = device["modules"][1]["dashboard_data"]
-        displaystr = "Indoor " + str(indoor["Temperature"]) + " | "
-        displaystr += "Outdoor " + str(outdoor["Temperature"]) + " | "
-        displaystr += "Rain " + str(rain["Rain"])
+        displaystr = (
+            "Pressure " + str(indoor["Pressure"]) + " | " +
+            "Indoor " + str(indoor["Temperature"]) + " | " +
+            "Outdoor " + str(outdoor["Temperature"]) + " | " +
+            "Rain " + str(rain["Rain"])
+        )
         print(nowstr(), "|", displaystr)
     # external display - from data in data.json
     if os.path.isfile('./display.py'):
@@ -149,7 +151,7 @@ def main():
     global g_token
     global g_config
     global g_data
-    print("netatmo.py v0.11 2019-09-13")
+    print("netatmo.py v0.12 2019-09-17")
 
     # read config
     if os.path.isfile(config_filename):
@@ -161,7 +163,7 @@ def main():
         print(nowstr(), "main() error:")
         print(nowstr(), "config file not found: creating an empty one.")
         print(nowstr(), "Please edit", config_filename, "and try again.")
-        sys.exit(1)
+        return
 
     # read last token    
     if os.path.isfile(token_filename):
@@ -183,7 +185,7 @@ def main():
         except KeyboardInterrupt:
             # Crtl+C
             print(nowstr(), "Keyboard exception received. Exiting.")
-            sys.exit()
+            return
 
 if __name__ == '__main__':
     main()
