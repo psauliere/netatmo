@@ -35,6 +35,9 @@ g_image = None
 def datetimestr(t):
     return time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(t))
 
+def timestr(t):
+    return time.strftime('%H:%M',time.localtime(t))
+
 def read_json(filename):
     """Read a JSON file to a dict object."""
     with open(filename, 'r') as f:
@@ -98,10 +101,10 @@ def draw_image():
     #unit_pressure = ['mbar', 'inHg', 'mmHg'][user_admin["pressureunit"]]
 
     # get and format values
-    data_time_str = datetimestr(g_data["time_server"])
-    indoor_temp_str = '{0:.2f}'.format(indoor["Temperature"]) + unit_temp + trend_symbol(indoor["temp_trend"])
-    outdoor_temp_str = '{0:.2f}'.format(outdoor["Temperature"]) + unit_temp + trend_symbol(outdoor["temp_trend"])
-    rain_str = '{0:.1f}'.format(rain["Rain"]) + unit_rain
+    data_time_str = timestr(g_data["time_server"])
+    indoor_temp_str = '{0:.2f}'.format(indoor["Temperature"]) + " " + unit_temp + trend_symbol(indoor["temp_trend"])
+    outdoor_temp_str = '{0:.2f}'.format(outdoor["Temperature"]) + " " + unit_temp + trend_symbol(outdoor["temp_trend"])
+    rain_str = '{0:.1f}'.format(rain["Rain"]) + " " + unit_rain
 
     # center the temperatures
     #(txtwidth, txtheight) = draw.textsize(indoor_temp_str, font=font_temp)
@@ -124,7 +127,8 @@ def draw_image():
     draw.text((x, y + txtheight + 5), outdoor_temp_str, fill=BLACK, font = font_temp)
     draw.text((x, y + 2*txtheight + 10), rain_str, fill=BLACK, font = font_temp)
 
-    draw.text((5, 5), data_time_str, fill = BLACK, font = font_time)
+    (width_time, height_time) = draw.textsize(data_time_str, font=font_time)
+    draw.text((width - width_time - 5, 5), data_time_str, fill = BLACK, font = font_time)
 
 def main():
     """Main function"""
