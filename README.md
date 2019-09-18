@@ -5,17 +5,18 @@ NetAtmo weather station display, based on a Raspberry Pi and an e-Paper screen.
 Table of contents
 =================
 
-* Introduction
-* Installation
-  * Raspbian for the Raspberry Pi
-  * PaPiRus setup
-  * Waveshare Setup
-  * Download the app!
-  * NetAtmo API
-* Files
-* Running the program
-* References
+* [Introduction](#introduction)
+* [Installation](#installation)
+  * [Raspbian for the Raspberry Pi](#raspbian)
+  * [PaPiRus setup](#papirus)
+  * [Waveshare Setup](#waveshare)
+  * [Download the app!](#download)
+  * [NetAtmo API](#netatmo)
+* [Files](#files)
+* [Running the program](#running)
+* [References](#references)
 
+<a name="introduction"></a>
 Introduction
 ============
 
@@ -61,9 +62,11 @@ The first setup works fine but the PaPiRus screen is not attached to the HAT boa
 
 As this is a new project (as of sept. 2019), I chose Python 3 for the code: Python 3.5.3 on Raspbian Stretch, 3.7.3 on Raspbian Buster.
 
+<a name="installation"></a>
 Installation
 ============
 
+<a name="raspbian"></a>
 Raspbian for the Raspberry Pi
 -----------------------------
 
@@ -134,6 +137,7 @@ sudo apt install git fonts-freefont-ttf python3-pip python3-pil python3-requests
 
 [18]: https://github.com/psf/requests
 
+<a name="papirus"></a>
 PaPiRus setup
 -------------
 
@@ -180,6 +184,7 @@ papirus-write "Hello world!"
 papirus-clear
 ```
 
+<a name="waveshare"></a>
 Waveshare Setup
 ---------------
 
@@ -233,6 +238,7 @@ cd
 
 This should display some test patterns on the Waveshare screen.
 
+<a name="download"></a>
 Download the app!
 -----------------
 
@@ -253,7 +259,7 @@ cp sample_data.json data.json
 
 This should display a sample based on the sample data included in the repo.
 
-
+<a name="netatmo"></a>
 NetAtmo API
 -----------
 
@@ -269,7 +275,8 @@ Once you have all these values, copy the `sample_config.json` file to a new `con
 - `client_secret`: your NetAtmo app client secret
 - `device_id`: your indoor module MAC address
 
-Files
+<a name="files"></a>
+Files 
 =====
 
 You need these 3 files to begin:
@@ -305,7 +312,8 @@ In this example, the display shows:
 - the outdoor temperature and trend
 - the rain in mm/h
 
-Running the program
+<a name="running"></a>
+Running the program 
 ===================
 
 Run `./netatmo.py`, for instance in a `tmux` session to let it run even when you disconnect your SSH session.
@@ -324,6 +332,7 @@ To stop the program, type Ctrl+C.
 
 ![netatmo.py screenshot](images/console_screenshot.png "netatmo.py running in a tmux session")
 
+<a name="references"></a>
 References
 ==========
 
