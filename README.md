@@ -1,7 +1,23 @@
 # netatmo
-NetAtmo weather station display
 
-> Warning: Code and documentation are a work in progress.
+NetAtmo weather station display, based on a Raspberry Pi and an e-Paper screen.
+
+Table of contents
+=================
+
+* Introduction
+* Installation
+  * Raspbian for the Raspberry Pi
+  * PaPiRus setup
+  * Waveshare Setup
+  * Download the app!
+  * NetAtmo API
+* Files
+* Running the program
+* References
+
+Introduction
+============
 
 The [NetAtmo Smart Weather Station][1] is a nice weather station with an indoor and an outdoor module, and optional rain gauge, anemometer and additional indoor modules. All the data from the different modules is available on the [web portal][2] and on the mobile app.
 
@@ -27,7 +43,7 @@ The first setup I tried is this one:
 
 [7]: https://uk.pi-supply.com/products/papirus-epaper-eink-screen-hat-for-raspberry-pi
 
-![Raspberry Pi Zero W and PaPiRus 2.7inch ePaper HAT](images/papirus_2in7.jpg "Raspberry Pi Zero W and PaPiRus 2.7inch ePaper HAT")
+![PaPiRus photo](images/papirus_2in7.jpg "Raspberry Pi Zero W and PaPiRus 2.7inch ePaper HAT")
 
 Then I tried a second setup:
 
@@ -39,14 +55,14 @@ Then I tried a second setup:
 
 [9]: http://www.waveshare.com/2.7inch-e-paper-hat.htm
 
-![Raspberry Pi 3 B+ and Waveshare 2.7 inch ePaper Hat](images/waveshare_2in7.jpg "Raspberry Pi 3 B+ and Waveshare 2.7 inch ePaper Hat")
+![Waveshare photo](images/waveshare_2in7.jpg "Raspberry Pi 3 B+ and Waveshare 2.7 inch ePaper Hat")
 
 The first setup works fine but the PaPiRus screen is not attached to the HAT board, making the thing very fragile without a suitable case. The Waveshare is well attached and the whole setup is much more robust. But on the software side, the PaPiRus has a much better story than the Waveshare. Anyway, both work as expected.
 
 As this is a new project (as of sept. 2019), I chose Python 3 for the code: Python 3.5.3 on Raspbian Stretch, 3.7.3 on Raspbian Buster.
 
-Preparation
-===========
+Installation
+============
 
 Raspbian for the Raspberry Pi
 -----------------------------
@@ -78,7 +94,7 @@ network={
 
 Remove the microSD from the PC, insert it in the Raspberry Pi and plug the power supply. The first boot should take a few minutes. It should connect to your Wifi network and you should be able to get its IP address from your router.
 
-Connect to the device from you PC or MAC:
+Connect to the device from you PC or Mac:
 
 ```
 ssh pi@<IP_address>
@@ -305,6 +321,8 @@ More on tmux:
 - https://leanpub.com/the-tao-of-tmux/read
 
 To stop the program, type Ctrl+C.
+
+![netatmo.py screenshot](images/console_screenshot.png "netatmo.py running in a tmux session")
 
 References
 ==========
