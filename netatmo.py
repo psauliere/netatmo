@@ -10,6 +10,12 @@ import requests
 import time
 import sys
 import os
+import logging
+
+logging.basicConfig(
+    level = logging.INFO,
+    format = '%(asctime)-15s | %(message)s'
+)
 
 # JSON file names
 config_filename = "config.json"
@@ -32,9 +38,8 @@ def read_json(filename):
     with open(filename, 'r') as f:
         try:
             data = json.load(f)
-        except json.decoder.JSONDecodeError as e:
-            print(nowstr(), "read_json() JSONDecodeError:")
-            print(nowstr(), e)
+        except json.decoder.JSONDecodeError:
+            logging.warning("read_json() JSONDecodeError", exc_info=1)
             data = dict()
     return data
 
@@ -56,20 +61,19 @@ def authenticate():
     }
     try:
         response = requests.post("https://api.netatmo.com/oauth2/token", data=payload)
-        #print(response.status_code, response.text)
+        logging.debug("%d %s", response.status_code, response.text)
         response.raise_for_status()
         g_token = response.json()
         write_json(g_token, token_filename)
-        print(nowstr(), "authenticate() OK.")
+        logging.info("authenticate() OK.")
     except requests.exceptions.HTTPError as e:
-        print(nowstr(), "authenticate() HTTPError:")
-        print(nowstr(), e.response.status_code, e.response.text)
-        print(nowstr(), "authenticate() exiting")
+        logging.error("authenticate() HTTPError")
+        logging.error("%d %s", e.response.status_code, e.response.text)
+        logging.info("authenticate() exiting")
         sys.exit(1)
-    except requests.exceptions.RequestException as e:
-        print(nowstr(), "authenticate() RequestException:")
-        print(nowstr(), e)
-        print(nowstr(), "authenticate() exiting")
+    except requests.exceptions.RequestException:
+        logging.error("authenticate() RequestException", exc_info=1)
+        logging.info("authenticate() exiting")
         sys.exit(1)
 
 def refresh_token():
@@ -84,19 +88,18 @@ def refresh_token():
     }
     try:
         response = requests.post("https://api.netatmo.com/oauth2/token", data=payload)
-        #print(response.status_code, response.text)
+        logging.debug("%d %s", response.status_code, response.text)
         response.raise_for_status()
         g_token = response.json()
         write_json(g_token, token_filename)
-        print(nowstr(), "refresh_token() OK.")
+        logging.info("refresh_token() OK.")
     except requests.exceptions.HTTPError as e:
-        print(nowstr(), "refresh_token() HTTPError:")
-        print(nowstr(), e.response.status_code, e.response.text)
-        print(nowstr(), "refresh_token() calling authenticate()")
+        logging.warning("refresh_token() HTTPError")
+        logging.warning("%d %s", e.response.status_code, e.response.text)
+        logging.info("refresh_token() calling authenticate()")
         authenticate()
-    except requests.exceptions.RequestException as e:
-        print(nowstr(), "refresh_token() RequestException:")
-        print(nowstr(), e)
+    except requests.exceptions.RequestException:
+        logging.error("refresh_token() RequestException", exc_info=1)
 
 def get_station_data():
     """Gets Netatmo weather station data. Result: g_data and data.json file."""
@@ -109,22 +112,21 @@ def get_station_data():
     }
     try:
         response = requests.post("https://api.netatmo.com/api/getstationsdata", params=params)
-        #print(response.status_code, response.text)
+        logging.debug("%d %s", response.status_code, response.text)
         response.raise_for_status()
         g_data = response.json()
         write_json(g_data, data_filename)    
     except requests.exceptions.HTTPError as e:
-        print(nowstr(), "get_station_data() HTTPError:")
-        print(nowstr(), e.response.status_code, e.response.text)
+        logging.warning("get_station_data() HTTPError")
+        logging.warning("%d %s", e.response.status_code, e.response.text)
         if e.response.status_code == 403:
-            print(nowstr(), "get_station_data() calling refresh_token()")
+            logging.info("get_station_data() calling refresh_token()")
             refresh_token()
             # retry
-            print(nowstr(), "get_station_data() calling get_station_data()")
+            logging.info("get_station_data() calling get_station_data()")
             get_station_data()
-    except requests.exceptions.RequestException as e:
-        print(nowstr(), "get_station_data() RequestException:")
-        print(nowstr(), e)
+    except requests.exceptions.RequestException:
+        logging.error("get_station_data() RequestException:", exc_info=1)
 
 def display():
     """Displays weather data. Input: g_data"""
@@ -141,7 +143,7 @@ def display():
             "Outdoor " + str(outdoor["Temperature"]) + " | " +
             "Rain " + str(rain["Rain"])
         )
-        print(nowstr(), "|", displaystr)
+        logging.info(displaystr)
     # external display - from data in data.json
     if os.path.isfile('./display.py'):
         os.system('python3 ./display.py')
@@ -151,7 +153,7 @@ def main():
     global g_token
     global g_config
     global g_data
-    print("netatmo.py v0.12 2019-09-17")
+    print("netatmo.py v0.13 2019-09-19")
 
     # read config
     if os.path.isfile(config_filename):
@@ -160,9 +162,9 @@ def main():
         g_config = {'username': 'xx', 'password': 'xx',
             'client_id': 'xx', 'client_secret': 'xx', 'device_id': 'xx'}
         write_json(g_config, config_filename)
-        print(nowstr(), "main() error:")
-        print(nowstr(), "config file not found: creating an empty one.")
-        print(nowstr(), "Please edit", config_filename, "and try again.")
+        logging.error("main() error:")
+        logging.error("config file not found: creating an empty one.")
+        logging.error("Please edit %s and try again.", config_filename)
         return
 
     # read last token    
@@ -184,7 +186,7 @@ def main():
             time.sleep(600)
         except KeyboardInterrupt:
             # Crtl+C
-            print(nowstr(), "Keyboard exception received. Exiting.")
+            logging.info("Keyboard exception received. Exiting.")
             return
 
 if __name__ == '__main__':

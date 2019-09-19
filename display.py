@@ -127,6 +127,7 @@ def draw_image():
     draw.text((x, y + txtheight + 5), outdoor_temp_str, fill=BLACK, font = font_temp)
     draw.text((x, y + 2*txtheight + 10), rain_str, fill=BLACK, font = font_temp)
 
+    # time
     (width_time, height_time) = draw.textsize(data_time_str, font=font_time)
     draw.text((width - width_time - 5, 5), data_time_str, fill = BLACK, font = font_time)
 
@@ -145,7 +146,7 @@ def main():
         papirus.update()
         return
     except:
-        logging.info("Papirus failed.",exc_info=1)
+        logging.info("Papirus failed.", exc_info=1)
         pass
 
     try:
@@ -163,7 +164,7 @@ def main():
         epd.sleep()
         return
     except:
-        logging.info("Waveshare failed.",exc_info=1)
+        logging.info("Waveshare failed.", exc_info=1)
         pass
 
     # *** no known screen: just save the bmp
