@@ -307,7 +307,7 @@ Files created by the program:
 
 In this example, the display shows:
 
-- the date date & time of the `getstationdata` API call.
+- the time of the `getstationdata` API call.
 - the indoor temperature and trend
 - the outdoor temperature and trend
 - the rain in mm/h
