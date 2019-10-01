@@ -131,7 +131,7 @@ def get_station_data():
         logging.error("get_station_data() RequestException:", exc_info=1)
 
 def display_console():
-    """Displays weather data. Input: g_data"""
+    """Displays weather data on the console. Input: g_data"""
     global g_data
     # console
     if "body" in g_data:
@@ -146,16 +146,13 @@ def display_console():
             "Rain " + str(rain["Rain"])
         )
         logging.info(displaystr)
-    # external display - from data in data.json
-    #if os.path.isfile('./display.py'):
-    #    os.system('python3 ./display.py')
 
 def main():
     """Main function"""
     global g_token
     global g_config
     global g_data
-    print("netatmo.py v0.13 2019-09-19")
+    print("netatmo.py v0.14 2019-10-02")
 
     # read config
     if os.path.isfile(config_filename):
