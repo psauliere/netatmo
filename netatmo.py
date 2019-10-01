@@ -17,6 +17,8 @@ logging.basicConfig(
     format = '%(asctime)-15s | %(message)s'
 )
 
+import display
+
 # JSON file names
 config_filename = "config.json"
 token_filename = "token.json"
@@ -128,7 +130,7 @@ def get_station_data():
     except requests.exceptions.RequestException:
         logging.error("get_station_data() RequestException:", exc_info=1)
 
-def display():
+def display_console():
     """Displays weather data. Input: g_data"""
     global g_data
     # console
@@ -145,8 +147,8 @@ def display():
         )
         logging.info(displaystr)
     # external display - from data in data.json
-    if os.path.isfile('./display.py'):
-        os.system('python3 ./display.py')
+    #if os.path.isfile('./display.py'):
+    #    os.system('python3 ./display.py')
 
 def main():
     """Main function"""
@@ -180,7 +182,8 @@ def main():
     # main loop
     while True:
         get_station_data()
-        display()
+        display_console()
+        display.main()
         try:
             # sleep 10 minutes
             time.sleep(600)

@@ -19,7 +19,8 @@ logging.basicConfig(level=logging.WARNING)
 
 WHITE = 1
 BLACK = 0
-# Font file
+# Font file: path below if installed with
+# sudo apt install fonts-freefont-ttf
 font_file = '/usr/share/fonts/truetype/freefont/FreeSans.ttf'
 if not os.path.isfile(font_file):
     font_file = '../freefont/FreeSans.ttf'
@@ -145,7 +146,7 @@ def main():
         papirus.update()
         return
     except:
-        logging.info("Papirus failed.", exc_info=1)
+        logging.debug("Papirus failed.", exc_info=1)
         pass
 
     try:
@@ -163,15 +164,15 @@ def main():
         epd.sleep()
         return
     except:
-        logging.info("Waveshare failed.", exc_info=1)
+        logging.debug("Waveshare failed.", exc_info=1)
         pass
 
     # *** no known screen: just save the bmp
-    logging.info("No known screen.")
+    logging.debug("No known screen.")
     g_image = Image.new('1', (264, 176), WHITE)
     draw_image()
     g_image.save(image_filename)
 
 # main
 if "__main__" == __name__:
-        main()
+    main()
