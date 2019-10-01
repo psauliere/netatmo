@@ -325,8 +325,8 @@ On the console, you will see that:
 
 More on tmux:
 
-- https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/
-- https://leanpub.com/the-tao-of-tmux/read
+- [A Quick and Easy Guide to tmux](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/)
+- [The Tao of tmux](https://leanpub.com/the-tao-of-tmux/read)
 
 To stop the program, type Ctrl+C.
 
@@ -336,10 +336,7 @@ To stop the program, type Ctrl+C.
 References
 ==========
 
-NetAtmo developer documentation: https://dev.netatmo.com/resources/technical/introduction
-
-PaPiRus documentation: https://github.com/PiSupply/PaPiRus
-
-Waveshare 2.7inch e-Paper documentation: https://www.waveshare.com/wiki/2.7inch_e-Paper_HAT
-
-Another NetAtmo Display project: https://github.com/bkoopman/netatmo-display
+- [NetAtmo developer documentation](https://dev.netatmo.com/resources/technical/introduction)
+- [PaPiRus documentation](https://github.com/PiSupply/PaPiRus)
+- [Waveshare 2.7inch e-Paper documentation](https://www.waveshare.com/wiki/2.7inch_e-Paper_HAT)
+- [Another NetAtmo Display project: netatmo-display](https://github.com/bkoopman/netatmo-display)
