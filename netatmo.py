@@ -12,12 +12,7 @@ import sys
 import os
 import logging
 
-logging.basicConfig(
-    level = logging.INFO,
-    format = '%(asctime)-15s | %(message)s'
-)
-
-import display
+logging.basicConfig(level = logging.INFO, format = '%(asctime)-15s | %(message)s')
 
 # JSON file names
 config_filename = "config.json"
@@ -29,11 +24,11 @@ g_config = dict()
 g_token = dict()
 g_data = dict()
 
-def timestr(t):
-    return time.strftime("%H:%M:%S",time.localtime(t))
+#def timestr(t):
+#    return time.strftime("%H:%M:%S",time.localtime(t))
 
-def nowstr():
-    return time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
+#def nowstr():
+#    return time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
 
 def read_json(filename):
     """Read a JSON file to a dict object."""
@@ -180,9 +175,11 @@ def main():
     while True:
         get_station_data()
         display_console()
-        display.main()
+        # external display
+        if os.path.isfile('./display.py'):
+            os.system('python3 ./display.py')
+        # sleep 10 minutes
         try:
-            # sleep 10 minutes
             time.sleep(600)
         except KeyboardInterrupt:
             # Crtl+C
