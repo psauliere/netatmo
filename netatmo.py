@@ -120,7 +120,7 @@ def get_station_data():
             logging.info("get_station_data() calling refresh_token()")
             refresh_token()
             # retry
-            logging.info("get_station_data() calling get_station_data()")
+            logging.info("get_station_data() retrying")
             get_station_data()
     except requests.exceptions.RequestException:
         logging.error("get_station_data() RequestException:", exc_info=1)
@@ -131,15 +131,27 @@ def display_console():
     # console
     if "body" in g_data:
         device = g_data["body"]["devices"][0]
-        indoor = device["dashboard_data"]
-        outdoor = device["modules"][0]["dashboard_data"]
-        rain = device["modules"][1]["dashboard_data"]
         displaystr = (
-            "Pressure " + str(indoor["Pressure"]) + " | " +
-            "Indoor " + str(indoor["Temperature"]) + " | " +
-            "Outdoor " + str(outdoor["Temperature"]) + " | " +
-            "Rain " + str(rain["Rain"])
+            "Pressure " + str(device["dashboard_data"]["Pressure"]) +
+            " | Indoor " + str(device["dashboard_data"]["Temperature"])
         )
+        for module in device["modules"]:
+            module_type = module["type"]
+            if module_type == "NAMain":
+                # Base station
+                pass
+            elif module_type == "NAModule1":
+                # Outdoor Module
+                displaystr += " | Outdoor " + str(module["dashboard_data"]["Temperature"])
+            elif module_type == "NAModule2":
+                # Wind Gauge
+                displaystr += " | Wind " + str(module["dashboard_data"]["WindStrength"]) + " " + str(module["dashboard_data"]["WindAngle"])
+            elif module_type == "NAModule3":
+                # Rain Gauge
+                displaystr += " | Rain " + str(module["dashboard_data"]["Rain"])
+            elif module_type == "NAModule4":
+                # Optional indoor module
+                displaystr += " | Indoor " + str(module["dashboard_data"]["Temperature"])
         logging.info(displaystr)
 
 def main():
@@ -147,7 +159,7 @@ def main():
     global g_token
     global g_config
     global g_data
-    print("netatmo.py v0.14 2019-10-02")
+    print("netatmo.py v0.15 2019-10-03")
 
     # read config
     if os.path.isfile(config_filename):

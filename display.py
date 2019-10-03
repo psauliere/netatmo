@@ -84,28 +84,53 @@ def draw_image():
         logging.error("Bad data format")
         sys.exit(1)
 
-    # extract data
-    user_admin = g_data["body"]["user"]["administrative"]
-    device = g_data["body"]["devices"][0]
-    #place = device["place"]
-    indoor = device["dashboard_data"]
-    outdoor = device["modules"][0]["dashboard_data"]
-    rain = device["modules"][1]["dashboard_data"]
-
     # Units
     # see https://dev.netatmo.com/en-US/resources/technical/reference/weather/getstationsdata
     # for details
+    user_admin = g_data["body"]["user"]["administrative"]
     unit_temp = ['°C', '°F'][user_admin["unit"]]
     unit_rain = ['mm/h', 'in/h'][user_admin["unit"]]
-    # Uncomment if needed
-    #unit_wind = ['kph', 'mph', 'm/s', 'beaufort', 'knot'][user_admin["windunit"]]
-    #unit_pressure = ['mbar', 'inHg', 'mmHg'][user_admin["pressureunit"]]
+    unit_wind = ['kph', 'mph', 'm/s', 'beaufort', 'knot'][user_admin["windunit"]]
+    unit_pressure = ['mbar', 'inHg', 'mmHg'][user_admin["pressureunit"]]
 
     # get and format values
+    indoor_temp_str = 'N/A'
+    indoor_pressure_str = 'N/A'
+    outdoor_temp_str = 'N/A'
+    rain_str = 'N/A'
+    wind_str = 'N/A'
+
     data_time_str = timestr(g_data["time_server"])
-    indoor_temp_str = '{0:.2f}'.format(indoor["Temperature"]) + " " + unit_temp + trend_symbol(indoor["temp_trend"])
-    outdoor_temp_str = '{0:.2f}'.format(outdoor["Temperature"]) + " " + unit_temp + trend_symbol(outdoor["temp_trend"])
-    rain_str = '{0:.1f}'.format(rain["Rain"]) + " " + unit_rain
+
+    # main module: indoor temperature (line 1)
+    device = g_data["body"]["devices"][0]
+    indoor_data = device["dashboard_data"]
+    indoor_temp_str = '{0:.2f}'.format(indoor_data["Temperature"]) + " " + unit_temp
+    if "temp_trend" in indoor_data:
+        indoor_temp_str += trend_symbol(indoor_data["temp_trend"])
+    indoor_pressure_str = '{0:.1f}'.format(indoor_data["Pressure"]) + " " + unit_pressure
+    if "pressure_trend" in indoor_data:
+        indoor_pressure_str += trend_symbol(indoor_data["pressure_trend"])
+
+    # other modules: outdoor temperature, rain (lines 2 & 3)
+    for module in device["modules"]:
+        module_type = module["type"]
+        module_data = module["dashboard_data"]
+        if module_type == "NAModule1":
+            # Outdoor Module
+            outdoor_temp_str = '{0:.2f}'.format(module_data["Temperature"]) + " " + unit_temp
+            if "temp_trend" in module_data:
+                outdoor_temp_str += trend_symbol(module_data["temp_trend"])
+        elif module_type == "NAModule2":
+            # Wind Gauge
+            wind_str = '{0:.1f}'.format(module_data["WindStrength"]) + " " + unit_wind
+            pass
+        elif module_type == "NAModule3":
+            # Rain Gauge
+            rain_str = '{0:.1f}'.format(module_data["Rain"]) + " " + unit_rain
+        elif module_type == "NAModule4":
+            # Optional indoor module
+            pass
 
     # width and height of strings
     (width_indoor, height_indoor) = draw.textsize(indoor_temp_str, font=font_temp)
@@ -124,7 +149,7 @@ def draw_image():
     y = int((height - 3*txtheight - 10) / 2)
 
     draw.rectangle((2, 2, width - 2, height - 2), fill=WHITE, outline=BLACK)
-    # temperature and rain
+    # temperatures and rain
     draw.text((x, y), indoor_temp_str, fill=BLACK, font=font_temp)
     draw.text((x, y + txtheight + 5), outdoor_temp_str, fill=BLACK, font = font_temp)
     draw.text((x, y + 2*txtheight + 10), rain_str, fill=BLACK, font = font_temp)
