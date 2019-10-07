@@ -66,12 +66,12 @@ def authenticate():
     except requests.exceptions.HTTPError as e:
         logging.error("authenticate() HTTPError")
         logging.error("%d %s", e.response.status_code, e.response.text)
-        logging.info("authenticate() exiting")
-        sys.exit(1)
+        #logging.info("authenticate() exiting")
+        #sys.exit(1)
     except requests.exceptions.RequestException:
         logging.error("authenticate() RequestException", exc_info=1)
-        logging.info("authenticate() exiting")
-        sys.exit(1)
+        #logging.info("authenticate() exiting")
+        #sys.exit(1)
 
 def refresh_token():
     """NetAtmo API token refresh. Result: g_token and token.json file."""
@@ -93,8 +93,9 @@ def refresh_token():
     except requests.exceptions.HTTPError as e:
         logging.warning("refresh_token() HTTPError")
         logging.warning("%d %s", e.response.status_code, e.response.text)
-        logging.info("refresh_token() calling authenticate()")
-        authenticate()
+        if e.response.status_code == 403:
+            logging.info("refresh_token() calling authenticate()")
+            authenticate()
     except requests.exceptions.RequestException:
         logging.error("refresh_token() RequestException", exc_info=1)
 
@@ -129,37 +130,41 @@ def display_console():
     """Displays weather data on the console. Input: g_data"""
     global g_data
     # console
+    displaystr = "No data"
     if "body" in g_data:
         device = g_data["body"]["devices"][0]
-        displaystr = (
-            "Pressure " + str(device["dashboard_data"]["Pressure"]) +
-            " | Indoor " + str(device["dashboard_data"]["Temperature"])
-        )
+        if "Pressure" in device["dashboard_data"]:
+            displaystr = "Pressure " + str(device["dashboard_data"]["Pressure"])
+        if "Temperature" in device["dashboard_data"]:
+            displaystr += " | Indoor " + str(device["dashboard_data"]["Temperature"])
         for module in device["modules"]:
             module_type = module["type"]
-            if module_type == "NAMain":
-                # Base station
-                pass
-            elif module_type == "NAModule1":
+            if module_type == "NAModule1":
                 # Outdoor Module
-                displaystr += " | Outdoor " + str(module["dashboard_data"]["Temperature"])
+                if "Temperature" in module["dashboard_data"]:
+                    displaystr += " | Outdoor " + str(module["dashboard_data"]["Temperature"])
             elif module_type == "NAModule2":
                 # Wind Gauge
-                displaystr += " | Wind " + str(module["dashboard_data"]["WindStrength"]) + " " + str(module["dashboard_data"]["WindAngle"])
+                if "WindStrength" in module["dashboard_data"]:
+                    displaystr += " | Wind " + str(module["dashboard_data"]["WindStrength"])
+                if "WindAngle" in module["dashboard_data"]:
+                    displaystr += " angle " + str(module["dashboard_data"]["WindAngle"])
             elif module_type == "NAModule3":
                 # Rain Gauge
-                displaystr += " | Rain " + str(module["dashboard_data"]["Rain"])
+                if "Rain" in module["dashboard_data"]:
+                    displaystr += " | Rain " + str(module["dashboard_data"]["Rain"])
             elif module_type == "NAModule4":
                 # Optional indoor module
-                displaystr += " | Indoor " + str(module["dashboard_data"]["Temperature"])
-        logging.info(displaystr)
+                if "Temperature" in module["dashboard_data"]:
+                    displaystr += " | Indoor " + str(module["dashboard_data"]["Temperature"])
+    logging.info(displaystr)
 
 def main():
     """Main function"""
     global g_token
     global g_config
     global g_data
-    print("netatmo.py v0.15 2019-10-03")
+    print("netatmo.py v0.16 2019-10-07")
 
     # read config
     if os.path.isfile(config_filename):
