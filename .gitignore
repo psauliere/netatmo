@@ -4,3 +4,4 @@ token*.json
 image*.bmp
 
 .vscode/
+.DS_Store

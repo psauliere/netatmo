@@ -79,10 +79,10 @@ def draw_image():
         g_data = read_json(data_filename)
     else:
         logging.error("No data file")
-        sys.exit(1)
+        return
     if not ("body" in g_data):
         logging.error("Bad data format")
-        sys.exit(1)
+        return
 
     # Units
     # see https://dev.netatmo.com/en-US/resources/technical/reference/weather/getstationsdata
@@ -102,35 +102,36 @@ def draw_image():
 
     data_time_str = timestr(g_data["time_server"])
 
-    # main module: indoor temperature (line 1)
+    # main module: indoor temperature (line 1) and pressure (not used)
     device = g_data["body"]["devices"][0]
-    indoor_data = device["dashboard_data"]
-    indoor_temp_str = '{0:.2f}'.format(indoor_data["Temperature"]) + " " + unit_temp
-    if "temp_trend" in indoor_data:
-        indoor_temp_str += trend_symbol(indoor_data["temp_trend"])
-    indoor_pressure_str = '{0:.1f}'.format(indoor_data["Pressure"]) + " " + unit_pressure
-    if "pressure_trend" in indoor_data:
-        indoor_pressure_str += trend_symbol(indoor_data["pressure_trend"])
+    if "dashboard_data" in device:
+        indoor_data = device["dashboard_data"]
+        indoor_temp_str = '{0:.2f}'.format(indoor_data["Temperature"]) + " " + unit_temp
+        if "temp_trend" in indoor_data:
+            indoor_temp_str += trend_symbol(indoor_data["temp_trend"])
+        indoor_pressure_str = '{0:.1f}'.format(indoor_data["Pressure"]) + " " + unit_pressure
+        if "pressure_trend" in indoor_data:
+            indoor_pressure_str += trend_symbol(indoor_data["pressure_trend"])
 
-    # other modules: outdoor temperature, rain (lines 2 & 3)
+    # other modules: outdoor temperature, rain (lines 2 & 3), wind (unused), optional indoor (unused)
     for module in device["modules"]:
-        module_type = module["type"]
-        module_data = module["dashboard_data"]
-        if module_type == "NAModule1":
-            # Outdoor Module
-            outdoor_temp_str = '{0:.2f}'.format(module_data["Temperature"]) + " " + unit_temp
-            if "temp_trend" in module_data:
-                outdoor_temp_str += trend_symbol(module_data["temp_trend"])
-        elif module_type == "NAModule2":
-            # Wind Gauge
-            wind_str = '{0:.1f}'.format(module_data["WindStrength"]) + " " + unit_wind
-            pass
-        elif module_type == "NAModule3":
-            # Rain Gauge
-            rain_str = '{0:.1f}'.format(module_data["Rain"]) + " " + unit_rain
-        elif module_type == "NAModule4":
-            # Optional indoor module
-            pass
+        if "dashboard_data" in module:
+            module_type = module["type"]
+            module_data = module["dashboard_data"]
+            if module_type == "NAModule1":
+                # Outdoor Module
+                outdoor_temp_str = '{0:.2f}'.format(module_data["Temperature"]) + " " + unit_temp
+                if "temp_trend" in module_data:
+                    outdoor_temp_str += trend_symbol(module_data["temp_trend"])
+            elif module_type == "NAModule2":
+                # Wind Gauge
+                wind_str = '{0:.1f}'.format(module_data["WindStrength"]) + " " + unit_wind
+            elif module_type == "NAModule3":
+                # Rain Gauge
+                rain_str = '{0:.1f}'.format(module_data["Rain"]) + " " + unit_rain
+            elif module_type == "NAModule4":
+                # Optional indoor module
+                pass
 
     # width and height of strings
     (width_indoor, height_indoor) = draw.textsize(indoor_temp_str, font=font_temp)
@@ -172,7 +173,6 @@ def main():
         return
     except:
         logging.debug("Papirus failed.", exc_info=1)
-        pass
 
     try:
         # *** Waveshare 2.7inch e-Paper HAT ***
@@ -190,7 +190,6 @@ def main():
         return
     except:
         logging.debug("Waveshare failed.", exc_info=1)
-        pass
 
     # *** no known screen: just save the bmp
     logging.debug("No known screen.")
@@ -199,5 +198,5 @@ def main():
     g_image.save(image_filename)
 
 # main
-if "__main__" == __name__:
+if __name__ == '__main__':
     main()

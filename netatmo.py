@@ -133,30 +133,32 @@ def display_console():
     displaystr = "No data"
     if "body" in g_data:
         device = g_data["body"]["devices"][0]
-        if "Pressure" in device["dashboard_data"]:
-            displaystr = "Pressure " + str(device["dashboard_data"]["Pressure"])
-        if "Temperature" in device["dashboard_data"]:
-            displaystr += " | Indoor " + str(device["dashboard_data"]["Temperature"])
+        if "dashboard_data" in device:
+            if "Pressure" in device["dashboard_data"]:
+                displaystr = "Pressure " + str(device["dashboard_data"]["Pressure"])
+            if "Temperature" in device["dashboard_data"]:
+                displaystr += " | Indoor " + str(device["dashboard_data"]["Temperature"])
         for module in device["modules"]:
-            module_type = module["type"]
-            if module_type == "NAModule1":
-                # Outdoor Module
-                if "Temperature" in module["dashboard_data"]:
-                    displaystr += " | Outdoor " + str(module["dashboard_data"]["Temperature"])
-            elif module_type == "NAModule2":
-                # Wind Gauge
-                if "WindStrength" in module["dashboard_data"]:
-                    displaystr += " | Wind " + str(module["dashboard_data"]["WindStrength"])
-                if "WindAngle" in module["dashboard_data"]:
-                    displaystr += " angle " + str(module["dashboard_data"]["WindAngle"])
-            elif module_type == "NAModule3":
-                # Rain Gauge
-                if "Rain" in module["dashboard_data"]:
-                    displaystr += " | Rain " + str(module["dashboard_data"]["Rain"])
-            elif module_type == "NAModule4":
-                # Optional indoor module
-                if "Temperature" in module["dashboard_data"]:
-                    displaystr += " | Indoor " + str(module["dashboard_data"]["Temperature"])
+            if "dashboard_data" in module:
+                module_type = module["type"]
+                if module_type == "NAModule1":
+                    # Outdoor Module
+                    if "Temperature" in module["dashboard_data"]:
+                        displaystr += " | Outdoor " + str(module["dashboard_data"]["Temperature"])
+                elif module_type == "NAModule2":
+                    # Wind Gauge
+                    if "WindStrength" in module["dashboard_data"]:
+                        displaystr += " | Wind " + str(module["dashboard_data"]["WindStrength"])
+                    if "WindAngle" in module["dashboard_data"]:
+                        displaystr += " angle " + str(module["dashboard_data"]["WindAngle"])
+                elif module_type == "NAModule3":
+                    # Rain Gauge
+                    if "Rain" in module["dashboard_data"]:
+                        displaystr += " | Rain " + str(module["dashboard_data"]["Rain"])
+                elif module_type == "NAModule4":
+                    # Optional indoor module
+                    if "Temperature" in module["dashboard_data"]:
+                        displaystr += " | Indoor " + str(module["dashboard_data"]["Temperature"])
     logging.info(displaystr)
 
 def main():
@@ -164,7 +166,7 @@ def main():
     global g_token
     global g_config
     global g_data
-    print("netatmo.py v0.16 2019-10-07")
+    print("netatmo.py v0.17 2019-10-31")
 
     # read config
     if os.path.isfile(config_filename):
