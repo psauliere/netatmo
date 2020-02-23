@@ -14,6 +14,7 @@ Table of contents
   * [NetAtmo API](#netatmo)
 * [Files](#files)
 * [Running the program](#running)
+* [Launching on system startup](#startup)
 * [References](#references)
 
 <a name="introduction"></a>
@@ -48,13 +49,15 @@ The first setup I tried is this one:
 
 Then I tried a second setup:
 
-- [Raspberry Pi 3 B+][8].
+- [Raspberry Pi 3 B+][8] or [Raspberry Pi 4][9].
 
-- [Waveshare 2.7inch e-Paper HAT][9], which has the same size and resolution of 264 x 176 as the PaPiRus.
+- [Waveshare 2.7inch e-Paper HAT][10], which has the same size and resolution of 264 x 176 as the PaPiRus.
 
 [8]: https://www.raspberrypi.org/products/raspberry-pi-3-model-b-plus/
 
-[9]: http://www.waveshare.com/2.7inch-e-paper-hat.htm
+[9]: https://www.raspberrypi.org/products/raspberry-pi-4-model-b/
+
+[10]: http://www.waveshare.com/2.7inch-e-paper-hat.htm
 
 ![Waveshare photo](images/waveshare_2in7.jpg "Raspberry Pi 3 B+ and Waveshare 2.7 inch ePaper Hat")
 
@@ -320,17 +323,39 @@ Run `./netatmo.py`, for instance in a `tmux` session to let it run even when you
 
 On the console, you will see that:
 
- - Every 10 minutes, netatmo.py gets weather data and prints 1 line on the console with the date, time and temperatures.
+ - Every 10 minutes, netatmo.py gets weather data and prints 1 line on the console with the date, time, temperatures and, if you have the modules, rain and wind data.
  - Every three hours, the access token expires and the program refreshes it.
-
-More on tmux:
-
-- [A Quick and Easy Guide to tmux](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/)
-- [The Tao of tmux](https://leanpub.com/the-tao-of-tmux/read)
 
 To stop the program, type Ctrl+C.
 
 ![netatmo.py screenshot](images/console_screenshot.png "netatmo.py running in a tmux session")
+
+<a name="startup"></a>
+Launching on system startup
+===========================
+
+To act like an appliance, the program must survive power failures, that is it must automatically launch on system boot. As I find it convenient to use tmux to be able to watch the program's console output anytime I ssh to the system, the `launcher.sh` script creates a tmux session named NETATMO and launches `netatmo.py` inside the new tmux session.
+
+First you need to install `tmux` if not already done:
+```
+sudo apt install tmux
+```
+
+To run the `launcher.sh` script at system startup, edit the `/etc/rc.local` file as root and add this line, **before** the `exit 0` line:
+
+```
+su -c /home/pi/netatmo/launcher.sh -l pi
+```
+
+This will run the script as the `pi` user.
+
+Later, when you ssh to the system as the `pi` user, you can attach to the NETATMO session this way:
+
+```
+tmux a
+```
+
+and detach from the session with this key sequence: `Ctrl+B`, `d`.
 
 <a name="references"></a>
 References
@@ -340,3 +365,8 @@ References
 - [PaPiRus documentation](https://github.com/PiSupply/PaPiRus)
 - [Waveshare 2.7inch e-Paper documentation](https://www.waveshare.com/wiki/2.7inch_e-Paper_HAT)
 - [Another NetAtmo Display project: netatmo-display](https://github.com/bkoopman/netatmo-display)
+
+More on tmux:
+
+- [A Quick and Easy Guide to tmux](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/)
+- [The Tao of tmux](https://leanpub.com/the-tao-of-tmux/read)
