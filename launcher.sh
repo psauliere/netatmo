@@ -17,5 +17,5 @@ sleep 5
 echo "Launching netatmo.py"
 tmux send-keys -t $SESSION.0 "cd ~/netatmo" C-m
 echo "Pause"
-sleep 1
+sleep 5
 tmux send-keys -t $SESSION.0 "./netatmo.py" C-m
