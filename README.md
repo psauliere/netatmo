@@ -7,7 +7,7 @@ Table of contents
 
 * [Introduction](#introduction)
 * [Installation](#installation)
-  * [Raspbian for the Raspberry Pi](#raspbian)
+  * [Raspbian/Raspberry Pi OS](#raspbian)
   * [PaPiRus setup](#papirus)
   * [Waveshare Setup](#waveshare)
   * [Download the app!](#download)
@@ -73,9 +73,17 @@ Installation
 Raspbian/Raspberry Pi OS for the Raspberry Pi
 ---------------------------------------------
 
-You need to prepare a microSD card with Raspberry Pi OS Lite. It is important to get the 'Lite' version because you don't want the graphical interface on a fully headless device. The simplest way to do that today (jan. 2021 update) is to use the [Raspberry Pi Imager][11] for your OS. Just install and run the tool. Click on **Choose OS** and select **Raspberry Pi OS (other)** ans then **Raspberry Pi OS Lite (32 bit)**. Chose you microSD card and click **Write**. The tool does the downloading, the writing and the checking, so it may take some time.
+You need to prepare a microSD card with Raspberry Pi OS Lite. It is important to get the 'Lite' version because you don't want the graphical interface on a fully headless device. The simplest way to do that today (jan. 2021 update) is to use the Raspberry Pi Imager tool.
 
-[11]: https://www.raspberrypi.org/software/
+Insert a new microSD card in your PC or Mac (8 GB or more).
+
+Download, install and run the [Raspberry Pi Imager](https://www.raspberrypi.org/software/) for your OS.
+
+Click on **Choose OS**, select **Raspberry Pi OS (other)**, and then **Raspberry Pi OS Lite (32 bit)**.
+
+Choose your microSD card and click **Write**.
+
+The tool does the downloading, the writing and the checking, so it may take some time.
 
 Keep the microSD card in your computer. If it is not accessible, remove and insert it again.
 
@@ -83,7 +91,7 @@ There are two files you have to copy to the `boot` volume of the card. You can f
 
 First copy the file named `ssh` to the `boot` volume of the card. This is the simplest way to enable the OpenSSH server on Raspbian/Raspberry Pi OS.
 
-Then edit the `wpa_supplicant.conf`with your country, Wifi name and password:
+Then edit the `wpa_supplicant.conf` with your country code, Wifi name and password:
 
 ```
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -314,7 +322,7 @@ If `config.json` does not exist, `netatmo.py` creates an empty one and you have 
 
 `display.py`: display module, called by `netatmo.py` every 10 minutes. It reads `data.json` and displays the data on the screen. So if you choose another screen, or wish to change the display, you just have to adapt or rewrite this file. If no supported screen is present, `display.py` draws the image of the display into a `image.bmp` file. See below (`image.bmp`) for an example of display.
 
-If you want to customize the display, just copy `display.py` to `custom_display.py` et edit the copy. If `netatmo.py` finds a file named `custom_display.py`, it calls this one instead of `display.py`.
+If you want to customize the display, just copy `display.py` to `custom_display.py` and edit the copy. If `netatmo.py` finds a file named `custom_display.py`, it calls this one instead of `display.py`.
 
 Files created by the program:
 
@@ -322,7 +330,7 @@ Files created by the program:
 
 `data.json`: weather station data file. This file holds the JSON result of the latest NetAtmo `getstationdata` API call.
 
-`image.bmp`: image of the latest PaPiRus screen display, written by `display.py` Example:
+`image.bmp`: image of the latest PaPiRus screen display, written by `display.py`. Example:
 
 ![Sample image](images/sample_image.bmp "Sample image")
 
