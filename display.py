@@ -69,10 +69,12 @@ def draw_image():
     width, height = g_image.size
 
     # base font size on mono spaced font
-    font_size_temp = int((width - 4) / (10 * 0.65))     # room for 10 chars
-    font_temp = ImageFont.truetype(font_file, font_size_temp)
-    font_size_time = int((width - 10) / (20 * 0.65))    # YYYY-MM-DD HH:MM:SS
-    font_time = ImageFont.truetype(font_file, font_size_time)
+    #font_size_temp = int((width - 4) / (10 * 0.65))     # room for 10 chars
+    #font_size_time = int((width - 10) / (20 * 0.65))    # YYYY-MM-DD HH:MM:SS
+    #font_temp = ImageFont.truetype(font_file, font_size_temp)
+    #font_time = ImageFont.truetype(font_file, font_size_time)
+    font_temp = ImageFont.truetype(font_file, 40)
+    font_time = ImageFont.truetype(font_file, 20)
 
     # read data
     if os.path.isfile(data_filename):

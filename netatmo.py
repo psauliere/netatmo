@@ -24,8 +24,8 @@ g_config = dict()
 g_token = dict()
 g_data = dict()
 
-#def timestr(t):
-#    return time.strftime("%H:%M:%S",time.localtime(t))
+def timestr(t):
+    return time.strftime("%H:%M",time.localtime(t))
 
 #def nowstr():
 #    return time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
@@ -132,10 +132,11 @@ def display_console():
     # console
     displaystr = "No data"
     if "body" in g_data:
+        displaystr = "Time " + timestr(g_data["time_server"])
         device = g_data["body"]["devices"][0]
         if "dashboard_data" in device:
             if "Pressure" in device["dashboard_data"]:
-                displaystr = "Pressure " + str(device["dashboard_data"]["Pressure"])
+                displaystr += " | Pressure " + str(device["dashboard_data"]["Pressure"])
             if "Temperature" in device["dashboard_data"]:
                 displaystr += " | Indoor " + str(device["dashboard_data"]["Temperature"])
         for module in device["modules"]:
@@ -157,8 +158,12 @@ def display_console():
                         displaystr += " | Rain " + str(module["dashboard_data"]["Rain"])
                 elif module_type == "NAModule4":
                     # Optional indoor module
+                    if "module_name" in module:
+                        module_name = module["module_name"]
+                    else:
+                        module_name = "Opt Indoor"
                     if "Temperature" in module["dashboard_data"]:
-                        displaystr += " | Indoor " + str(module["dashboard_data"]["Temperature"])
+                        displaystr += " | " + module_name + " " + str(module["dashboard_data"]["Temperature"])
     logging.info(displaystr)
 
 def main():
@@ -166,7 +171,8 @@ def main():
     global g_token
     global g_config
     global g_data
-    print("netatmo.py v0.17 2019-10-31")
+    #print("netatmo.py v0.17 2019-10-31")
+    print("netatmo.py v0.18 2021-01-10")
 
     # read config
     if os.path.isfile(config_filename):
@@ -195,7 +201,9 @@ def main():
         get_station_data()
         display_console()
         # external display
-        if os.path.isfile('./display.py'):
+        if os.path.isfile('./custom_display.py'):
+            os.system('python3 ./custom_display.py')
+        elif os.path.isfile('./display.py'):
             os.system('python3 ./display.py')
         # sleep 10 minutes
         try:

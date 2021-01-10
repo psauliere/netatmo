@@ -70,22 +70,20 @@ Installation
 ============
 
 <a name="raspbian"></a>
-Raspbian for the Raspberry Pi
------------------------------
+Raspbian/Raspberry Pi OS for the Raspberry Pi
+---------------------------------------------
 
-Download the [Raspbian 9 (stretch) lite (without GUI) image][11], or the latest [Raspian 10 (buster) lite][12]. Both work, but I advise to use a _lite_ version, without a GUI.
+You need to prepare a microSD card with Raspberry Pi OS Lite. It is important to get the 'Lite' version because you don't want the graphical interface on a fully headless device. The simplest way to do that today (jan. 2021 update) is to use the [Raspberry Pi Imager][11] for your OS. Just install and run the tool. Click on **Choose OS** and select **Raspberry Pi OS (other)** ans then **Raspberry Pi OS Lite (32 bit)**. Chose you microSD card and click **Write**. The tool does the downloading, the writing and the checking, so it may take some time.
 
-Copy the image on the microSD card, for instance with [etcher][13].
+[11]: https://www.raspberrypi.org/software/
 
-[11]:http://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2018-04-19/2018-04-18-raspbian-stretch-lite.zip
+Keep the microSD card in your computer. If it is not accessible, remove and insert it again.
 
-[12]: https://www.raspberrypi.org/downloads/raspbian/
+There are two files you have to copy to the `boot` volume of the card. You can find samples of these files in the `boot` directory of this repo as an example.
 
-[13]: https://www.balena.io/etcher/
+First copy the file named `ssh` to the `boot` volume of the card. This is the simplest way to enable the OpenSSH server on Raspbian/Raspberry Pi OS.
 
-Before removing the microSD card from your computer, in the `boot` volume of the card, create an empty file named `ssh`. This is the simplest way to enable the OpenSSH server on Raspbian.
-
-Also copy a `wpa_supplicant.conf` file to the same `boot` volume, with this content (edit your country, Wifi name and password):
+Then edit the `wpa_supplicant.conf`with your country, Wifi name and password:
 
 ```
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -98,9 +96,11 @@ network={
 }
 ```
 
+Then copy the `wpa_supplicant.conf` to the same `boot` volume on the card. 
+
 Remove the microSD from the PC, insert it in the Raspberry Pi and plug the power supply. The first boot should take a few minutes. It should connect to your Wifi network and you should be able to get its IP address from your router.
 
-Connect to the device from you PC or Mac:
+Connect to the device from your PC or Mac:
 
 ```
 ssh pi@<IP_address>
@@ -113,8 +113,7 @@ If this doesn't work, boot the Raspberry with its microSD, a keyboard and an HDM
 Once connected with SSH, install the latest OS updates, and reboot:
 
 ```
-sudo apt update
-sudo apt dist-upgrade
+sudo apt update && sudo apt full-upgrade -y
 sudo reboot
 ```
 
@@ -144,7 +143,7 @@ sudo apt install git fonts-freefont-ttf python3-pip python3-pil python3-requests
 PaPiRus setup
 -------------
 
-Follow these instructions if you have a PaPiRus HAT and e-Paper screen.
+Follow these instructions *only if you have a PaPiRus HAT and e-Paper screen*.
 
 First, the hardware setup. Follow this documentation:
 
@@ -236,10 +235,15 @@ git clone https://github.com/waveshare/e-Paper
 ```
 cd e-Paper/RaspberryPi\&JetsonNano/python/examples
 python3 epd_2in7_test.py
-cd
 ```
 
 This should display some test patterns on the Waveshare screen.
+
+Come back to the home dir:
+
+```
+cd
+```
 
 <a name="download"></a>
 Download the app!
@@ -266,17 +270,29 @@ This should display a sample based on the sample data included in the repo.
 NetAtmo API
 -----------
 
-First you need to get the MAC address of your indoor module. Open https://my.netatmo.com/app/station, authenticate with your NetAtmo username and password, then click on _Manage my Station_. In the popup, look for _Indoor module_ and then _MAC address_. Take note of the value, which begins with `70:ee:50:`.
+First you need to get the MAC address of your indoor module. Open https://my.netatmo.com/app/station, authenticate with your NetAtmo username and password, then click on _Settings_ - _Manage my home_. In the popup, look for your indoor module and then for its _MAC address_. Take note of the value, which begins with `70:ee:50:`.
 
-Then go to https://dev.netatmo.com/myaccount/, authenticate with your NetAtmo username and password, and create a new app. Take note of the _client id_ and the _client secret_ for your app.
+Then go to https://dev.netatmo.com/apps/, authenticate with your NetAtmo username and password, and create a new app. Take note of the _client id_ and the _client secret_ for your app.
 
-Once you have all these values, copy the `sample_config.json` file to a new `config.json` file. Edit the file with your values:
+Once you have all these values, copy the `sample_config.json` file to a new `config.json` file:
 
-- `username`: your NetAtmo username
-- `password`: your NetAtmo password
-- `client_id`: your NetAtmo app client id
-- `client_secret`: your NetAtmo app client secret
-- `device_id`: your indoor module MAC address
+```
+cd
+cd netatmo
+cp sample_config.json config.json
+```
+
+Edit the `config.json` file with your values:
+
+```json
+{
+    "username": "your NetAtmo username",
+    "password": "your NetAtmo password",
+    "client_id": "your NetAtmo app client id",
+    "client_secret": "your NetAtmo app client secret",
+    "device_id": "your indoor module MAC address"
+}
+```
 
 <a name="files"></a>
 Files 
@@ -286,7 +302,7 @@ You need these 3 files to begin:
 
 - `config.json`
 - `netatmo.py`
-- `display.py`
+- `display.py` or `custom_display.py`
 
 If `config.json` does not exist, `netatmo.py` creates an empty one and you have to edit it.
 
@@ -294,9 +310,11 @@ If `config.json` does not exist, `netatmo.py` creates an empty one and you have 
 
 `netatmo.py`: main module. Every 10 minutes, it calls the [NetAtmo getstationdata API][getstationdata] to get the weather station data, stores it to the `data.json` file, and calls `display.py`. Manages the authentication and refreshes the oAuth2 token according to the NetAtmo documentation.
 
-[getstationdata]: https://dev.netatmo.com/resources/technical/reference/weather/getstationsdata
+[getstationdata]: https://dev.netatmo.com/apidocumentation/weather
 
 `display.py`: display module, called by `netatmo.py` every 10 minutes. It reads `data.json` and displays the data on the screen. So if you choose another screen, or wish to change the display, you just have to adapt or rewrite this file. If no supported screen is present, `display.py` draws the image of the display into a `image.bmp` file. See below (`image.bmp`) for an example of display.
+
+If you want to customize the display, just copy `display.py` to `custom_display.py` et edit the copy. If `netatmo.py` finds a file named `custom_display.py`, it calls this one instead of `display.py`.
 
 Files created by the program:
 
@@ -361,7 +379,7 @@ and detach from the session with this key sequence: `Ctrl+B`, `d`.
 References
 ==========
 
-- [NetAtmo developer documentation](https://dev.netatmo.com/resources/technical/introduction)
+- [NetAtmo developer documentation](https://dev.netatmo.com/)
 - [PaPiRus documentation](https://github.com/PiSupply/PaPiRus)
 - [Waveshare 2.7inch e-Paper documentation](https://www.waveshare.com/wiki/2.7inch_e-Paper_HAT)
 - [Another NetAtmo Display project: netatmo-display](https://github.com/bkoopman/netatmo-display)

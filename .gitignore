@@ -2,6 +2,7 @@ config*.json
 data*.json
 token*.json
 image*.bmp
+custom*
 
 .vscode/
 .DS_Store
