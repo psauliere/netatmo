@@ -178,9 +178,13 @@ def main():
 
     try:
         # *** Waveshare 2.7inch e-Paper HAT ***
-        libdir = os.path.realpath(os.getenv('HOME') + '/e-Paper/RaspberryPi&JetsonNano/python/lib')
+        libdir = os.path.realpath(os.getenv('HOME') + '/e-Paper/RaspberryPi_JetsonNano/python/lib')
         if os.path.exists(libdir):
             sys.path.append(libdir)
+        else:
+            libdir = os.path.realpath(os.getenv('HOME') + '/e-Paper/RaspberryPi&JetsonNano/python/lib')
+            if os.path.exists(libdir):
+                sys.path.append(libdir)
         from waveshare_epd import epd2in7
         epd = epd2in7.EPD()
         epd.init()

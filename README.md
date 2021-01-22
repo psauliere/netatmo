@@ -85,11 +85,11 @@ Choose your microSD card and click **Write**.
 
 The tool does the downloading, the writing and the checking, so it may take some time.
 
-Keep the microSD card in your computer. If it is not accessible, remove and insert it again.
+Keep the microSD card in your computer. If it is not accessible, remove it and insert it again.
 
 There are two files you have to copy to the `boot` volume of the card. You can find samples of these files in the `boot` directory of this repo as an example.
 
-First copy the file named `ssh` to the `boot` volume of the card. This is the simplest way to enable the OpenSSH server on Raspbian/Raspberry Pi OS.
+First copy the file named `ssh` to the `boot` volume of the card. This is the simplest way to enable the OpenSSH server on Raspbian/Raspberry Pi OS. The file size is 0 byte, that is normal: it just has to exist with the `ssh` name.
 
 Then edit the `wpa_supplicant.conf` with your country code, Wifi name and password:
 
@@ -241,7 +241,7 @@ git clone https://github.com/waveshare/e-Paper
 (Optional) test the display:
 
 ```
-cd e-Paper/RaspberryPi\&JetsonNano/python/examples
+cd e-Paper/RaspberryPi_JetsonNano/python/examples
 python3 epd_2in7_test.py
 ```
 
