@@ -2,8 +2,7 @@
 
 NetAtmo weather station display, based on a Raspberry Pi and an e-Paper screen.
 
-Table of contents
-=================
+<details><summary>Table of contents</summary>
 
 * [Introduction](#introduction)
 * [Installation](#installation)
@@ -17,9 +16,11 @@ Table of contents
 * [Launching on system startup](#startup)
 * [References](#references)
 
+</details>
+
 <a name="introduction"></a>
-Introduction
-============
+
+# Introduction
 
 The [NetAtmo Smart Weather Station][1] is a nice weather station with an indoor and an outdoor module, and optional rain gauge, anemometer and additional indoor modules. All the data from the different modules is available on the [web portal][2] and on the mobile app.
 
@@ -66,12 +67,12 @@ The first setup works fine but the PaPiRus screen is not attached to the HAT boa
 As this is a new project (as of sept. 2019), I chose Python 3 for the code: Python 3.5.3 on Raspbian Stretch, 3.7.3 on Raspbian Buster.
 
 <a name="installation"></a>
-Installation
-============
+
+# Installation
 
 <a name="raspbian"></a>
-Raspbian/Raspberry Pi OS for the Raspberry Pi
----------------------------------------------
+
+## Raspbian/Raspberry Pi OS for the Raspberry Pi
 
 You need to prepare a microSD card with Raspberry Pi OS Lite. It is important to get the 'Lite' version because you don't want the graphical interface on a fully headless device. The simplest way to do that today (jan. 2021 update) is to use the Raspberry Pi Imager tool.
 
@@ -148,8 +149,8 @@ sudo apt install git fonts-freefont-ttf python3-pip python3-pil python3-requests
 [18]: https://github.com/psf/requests
 
 <a name="papirus"></a>
-PaPiRus setup
--------------
+
+## PaPiRus setup
 
 Follow these instructions *only if you have a PaPiRus HAT and e-Paper screen*.
 
@@ -195,8 +196,8 @@ papirus-clear
 ```
 
 <a name="waveshare"></a>
-Waveshare Setup
----------------
+
+## Waveshare Setup
 
 If you have a Waveshare 2.7inch e-Paper screen, the instructions are here:
 
@@ -254,8 +255,8 @@ cd
 ```
 
 <a name="download"></a>
-Download the app!
------------------
+
+## Download the app!
 
 Download the code in your home dir:
 
@@ -275,8 +276,8 @@ cp sample_data.json data.json
 This should display a sample based on the sample data included in the repo.
 
 <a name="netatmo"></a>
-NetAtmo API
------------
+
+## NetAtmo API
 
 First you need to get the MAC address of your indoor module. Open https://my.netatmo.com/app/station, authenticate with your NetAtmo username and password, then click on _Settings_ - _Manage my home_. In the popup, look for your indoor module and then for its _MAC address_. Take note of the value, which begins with `70:ee:50:`.
 
@@ -303,8 +304,8 @@ Edit the `config.json` file with your values:
 ```
 
 <a name="files"></a>
-Files 
-=====
+
+# Files
 
 You need these 3 files to begin:
 
@@ -342,8 +343,8 @@ In this example, the display shows:
 - the rain in mm/h
 
 <a name="running"></a>
-Running the program 
-===================
+
+# Running the program
 
 Run `./netatmo.py`, for instance in a `tmux` session to let it run even when you disconnect your SSH session.
 
@@ -357,8 +358,8 @@ To stop the program, type Ctrl+C.
 ![netatmo.py screenshot](images/console_screenshot.png "netatmo.py running in a tmux session")
 
 <a name="startup"></a>
-Launching on system startup
-===========================
+
+# Launching on system startup
 
 To act like an appliance, the program must survive power failures, that is it must automatically launch on system boot. As I find it convenient to use tmux to be able to watch the program's console output anytime I ssh to the system, the `launcher.sh` script creates a tmux session named NETATMO and launches `netatmo.py` inside the new tmux session.
 
@@ -367,7 +368,7 @@ First you need to install `tmux` if not already done:
 sudo apt install tmux
 ```
 
-To run the `launcher.sh` script at system startup, edit the `/etc/rc.local` file as root and add this line, **before** the `exit 0` line:
+To run the `launcher.sh` script at system startup, edit the `/etc/rc.local` file as root and add this line, *before* the `exit 0` line:
 
 ```
 su -c /home/pi/netatmo/launcher.sh -l pi
@@ -384,8 +385,9 @@ tmux a
 and detach from the session with this key sequence: `Ctrl+B`, `d`.
 
 <a name="references"></a>
-References
-==========
+
+# References
+
 
 - [NetAtmo developer documentation](https://dev.netatmo.com/)
 - [PaPiRus documentation](https://github.com/PiSupply/PaPiRus)
