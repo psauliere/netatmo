@@ -1,9 +1,9 @@
 {
-    "access_token": "000000000000000000000000|00000000000000000000000000000000",
-    "refresh_token": "000000000000000000000000|11111111111111111111111111111111",
+    "access_token": "XXXX",
+    "refresh_token": "XXXX",
+    "expires_in": 10800,
+    "expire_in": 10800,
     "scope": [
         "read_station"
-    ],
-    "expires_in": 10800,
-    "expire_in": 10800
+    ]
 }

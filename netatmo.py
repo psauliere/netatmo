@@ -43,35 +43,61 @@ def read_json(filename):
 def write_json(data, filename):
     """Write a dict object to a JSON file."""
     with open(filename, 'w') as f:
-        json.dump(data, f)
+        json.dump(data, f, indent = 4)
 
-def authenticate():
-    """NetAtmo API authentication. Result:  g_token and token.json file."""
-    global g_token
-    payload = {
-        'grant_type': 'password',
-        'username': g_config['username'],
-        'password': g_config['password'],
-        'client_id': g_config['client_id'],
-        'client_secret': g_config['client_secret'],
-        'scope': 'read_station'
-    }
-    try:
-        response = requests.post("https://api.netatmo.com/oauth2/token", data=payload)
-        logging.debug("%d %s", response.status_code, response.text)
-        response.raise_for_status()
-        g_token = response.json()
+#def authenticate():
+#    """NetAtmo API authentication. Result:  g_token and token.json file."""
+#    global g_token
+#    payload = {
+#        'grant_type': 'password',
+#        'username': g_config['username'],
+#        'password': g_config['password'],
+#        'client_id': g_config['client_id'],
+#        'client_secret': g_config['client_secret'],
+#        'scope': 'read_station'
+#    }
+#    try:
+#        response = requests.post("https://api.netatmo.com/oauth2/token", data=payload)
+#        logging.debug("%d %s", response.status_code, response.text)
+#        response.raise_for_status()
+#        g_token = response.json()
+#        write_json(g_token, token_filename)
+#        logging.info("authenticate() OK.")
+#    except requests.exceptions.HTTPError as e:
+#        logging.error("authenticate() HTTPError")
+#        logging.error("%d %s", e.response.status_code, e.response.text)
+#        #logging.info("authenticate() exiting")
+#        #sys.exit(1)
+#    except requests.exceptions.RequestException:
+#        logging.error("authenticate() RequestException", exc_info=1)
+#        #logging.info("authenticate() exiting")
+#        #sys.exit(1)
+
+def get_new_token():
+    """Instruct the user to authenticate on the dev portal and get a new token."""
+    if not os.path.isfile(token_filename):
+        g_token = {"access_token": "xxxx", "refresh_token": "xxxx"}
         write_json(g_token, token_filename)
-        logging.info("authenticate() OK.")
-    except requests.exceptions.HTTPError as e:
-        logging.error("authenticate() HTTPError")
-        logging.error("%d %s", e.response.status_code, e.response.text)
-        #logging.info("authenticate() exiting")
-        #sys.exit(1)
-    except requests.exceptions.RequestException:
-        logging.error("authenticate() RequestException", exc_info=1)
-        #logging.info("authenticate() exiting")
-        #sys.exit(1)
+
+    logging.error('_______________________________________________________')
+    logging.error("Please generate a new access token, edit %s,", token_filename)
+    logging.error("and try again.")
+    logging.error(' - Go to https://dev.netatmo.com/apps/, authenticate')
+    logging.error('   if necessary, and select your app.')
+    logging.error(' - Under "Token generator", select the "read_station"')
+    logging.error('   scope and click "Generate Token".')
+    logging.error(' - It takes a while, but you will get a page where you')
+    logging.error('   have to authorize your app to access to your data.')
+    logging.error(' - Click "Yes I accept".')
+    logging.error('   You now have a new Access Token and a new Refresh')
+    logging.error('   token.')
+    logging.error(' - Click on the access token. It will copy it to your')
+    logging.error('   clipboard. Paste it in your %s file in place', token_filename)
+    logging.error('   of the access_token placeholder.')
+    logging.error(' - same thing for the refresh token.')
+    logging.error(' - save the %s file.', token_filename)
+    logging.error('_______________________________________________________')
+    sys.exit(1)
 
 def refresh_token():
     """NetAtmo API token refresh. Result: g_token and token.json file."""
@@ -93,9 +119,12 @@ def refresh_token():
     except requests.exceptions.HTTPError as e:
         logging.warning("refresh_token() HTTPError")
         logging.warning("%d %s", e.response.status_code, e.response.text)
-        if e.response.status_code == 403:
-            logging.info("refresh_token() calling authenticate()")
-            authenticate()
+        #if e.response.status_code == 403:
+        #    logging.info("refresh_token() calling authenticate()")
+        #    authenticate()
+        logging.warning("refresh_token() failed. Need a new access token.")
+        get_new_token()
+        return
     except requests.exceptions.RequestException:
         logging.error("refresh_token() RequestException", exc_info=1)
 
@@ -172,17 +201,17 @@ def main():
     global g_config
     global g_data
     #print("netatmo.py v0.17 2019-10-31")
-    print("netatmo.py v0.18 2021-01-10")
+    #print("netatmo.py v0.18 2021-01-10")
+    print("netatmo.py v0.19 2024-07-21")
 
     # read config
     if os.path.isfile(config_filename):
         g_config = read_json(config_filename)
     else:
-        g_config = {'username': 'xx', 'password': 'xx',
-            'client_id': 'xx', 'client_secret': 'xx', 'device_id': 'xx'}
+        g_config = {'client_id': 'xxxx', 'client_secret': 'xxxx', 'device_id': 'xxxx'}
         write_json(g_config, config_filename)
         logging.error("main() error:")
-        logging.error("config file not found: creating an empty one.")
+        logging.error("Config file not found: creating an empty one.")
         logging.error("Please edit %s and try again.", config_filename)
         return
 
@@ -190,7 +219,11 @@ def main():
     if os.path.isfile(token_filename):
         g_token = read_json(token_filename)
     else:
-        authenticate()
+        #authenticate()
+        logging.error("main() error:")
+        logging.error("Token file not found: creating an empty one.")
+        get_new_token()
+        return
 
     # read last data
     if os.path.isfile(data_filename):

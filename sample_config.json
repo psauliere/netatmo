@@ -1,7 +1,5 @@
 {
-    "username": "xxxxxxxx@xxxx.xxx",
-    "password": "xxxxxxxx",
-    "client_id": "xxxxxxxxxxxxxxxxxxxxxxxx",
-    "client_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "device_id": "70:ee:50:00:00:00"
+    "client_id": "XXXX",
+    "client_secret": "XXXX",
+    "device_id": "70:ee:50:XX:XX:XX"
 }
