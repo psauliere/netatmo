@@ -59,6 +59,11 @@ def trend_symbol(trend):
     else:
         return ' '
 
+def textsize(text, font):
+    left, top, right, bottom = font.getbbox(text)
+    width, height = int(right - left), int(bottom - top)
+    return width, height
+
 def draw_image():
     """Draws the image in memory (g_image)"""
     global g_data
@@ -136,10 +141,10 @@ def draw_image():
                 pass
 
     # width and height of strings
-    (width_indoor, height_indoor) = draw.textsize(indoor_temp_str, font=font_temp)
-    (width_outdoor, height_outdoor) = draw.textsize(outdoor_temp_str, font=font_temp)
-    (width_rain, height_rain) = draw.textsize(rain_str, font=font_temp)
-    (width_time, height_time) = draw.textsize(data_time_str, font=font_time)
+    (width_indoor, height_indoor) = textsize(indoor_temp_str, font=font_temp)
+    (width_outdoor, height_outdoor) = textsize(outdoor_temp_str, font=font_temp)
+    (width_rain, height_rain) = textsize(rain_str, font=font_temp)
+    (width_time, height_time) = textsize(data_time_str, font=font_time)
 
     # which is bigger?
     txtwidth, txtheight = width_indoor, height_indoor
