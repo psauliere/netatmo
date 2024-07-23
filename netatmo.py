@@ -43,7 +43,7 @@ def read_json(filename):
 def write_json(data, filename):
     """Write a dict object to a JSON file."""
     with open(filename, 'w') as f:
-        json.dump(data, f, indent = 4)
+        json.dump(data, f, indent = 2)
 
 #def authenticate():
 #    """NetAtmo API authentication. Result:  g_token and token.json file."""

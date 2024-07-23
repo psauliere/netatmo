@@ -10,7 +10,7 @@ NetAtmo weather station display, based on a Raspberry Pi and an e-Paper screen.
   * [PaPiRus setup](#papirus)
   * [Waveshare Setup](#waveshare)
   * [Download the app!](#download)
-  * [NetAtmo API](#netatmo)
+  * [NetAtmo API](#netatmoapi)
 * [Files](#files)
 * [Running the program](#running)
 * [Launching on system startup](#startup)
@@ -74,24 +74,24 @@ I chose Python 3 for the code as it is available and up to date on every Raspber
 
 ## Raspbian/Raspberry Pi OS for the Raspberry Pi
 
-You need to prepare a microSD card with Raspberry Pi OS Lite. It is important to get the 'Lite' version because you don't want the graphical interface on a fully headless device. The simplest way to do that today (jan. 2021 update) is to use the Raspberry Pi Imager tool.
+You need to prepare a microSD card with Raspberry Pi OS Lite. It is important to get the 'Lite' version because you don't want the graphical interface on a fully headless device. The simplest way to do that is to use the Raspberry Pi Imager tool:
 
 Insert a new microSD card in your PC or Mac (8 GB or more).
 
 Download, install and run the [Raspberry Pi Imager](https://www.raspberrypi.com/software/) for your OS.
 
 - Under Raspberry Pi Device, choose your target device.
-- Under Operating System, click on **Choose OS**, select **Raspberry Pi OS (other)**, and then **Raspberry Pi OS Lite (32 bit)**.
+- Under Operating System, click **Choose OS**, select **Raspberry Pi OS (other)**, and then **Raspberry Pi OS Lite (32 bit)**.
 - Under Storage, choose your microSD card.
 - Click **NEXT**.
 
 Next, you will have the option to use OS custom settings: click **EDIT SETTINGS**.
 
-- At least set the username and password. To make things simple, name the user `pi` and chose a password that will be easy to remember.
+- At least set the username and password. To make things simple, you can name the user `pi` and choose a password that will be easy to remember.
 - If you plan to use wifi, configure your wifi network.
 - In the SERVICE tab, check the **Enable SSH** box.
 - Chose if you want to authenticate with the password or a SSH key. If you already have a SSH key, paste your public key.
-- Click **SAVE**
+- Click **SAVE**.
 
 Click **YES** to use the OS customization settings.
 
@@ -117,27 +117,25 @@ Once connected with SSH, install the latest OS updates, and reboot:
 sudo apt update && sudo apt full-upgrade -y && sudo reboot
 ```
 
-Python 3 should already be installed. You can check its version with:
+Reconnect after the reboot. Python 3 should already be installed. You can check its version with:
 
 ```
 python3 -V
 ```
 
-Install [git][14], the [Freefont TrueType fonts][15], [pip][16], [PIL][17], and the [Requests][18] module (needed to call the NetAtmo API):
+Install [git][14], the [Freefont TrueType fonts][15], [PIL][16], and the [Requests][17] module (needed to call the NetAtmo API):
 
 ```
-sudo apt install git fonts-freefont-ttf python3-pip python3-pil python3-requests
+sudo apt install git fonts-freefont-ttf python3-pil python3-requests
 ```
 
 [14]: https://git-scm.com/
 
 [15]: http://savannah.gnu.org/projects/freefont/
 
-[16]: https://pip.pypa.io/en/stable/
+[16]: https://python-pillow.org/
 
-[17]: https://python-pillow.org/
-
-[18]: https://github.com/psf/requests
+[17]: https://github.com/psf/requests
 
 <a name="papirus"></a>
 
@@ -168,8 +166,9 @@ sudo reboot
 Then, follow the instructions here: https://github.com/PiSupply/PaPiRus. Or, here is the short version of these instructions:
 
 ```
-sudo apt-get install git bc i2c-tools fonts-freefont-ttf whiptail make gcc -y
-sudo apt-get install python3-pil python3-smbus python3-dateutil -y
+sudo apt update
+sudo apt install bc i2c-tools fonts-freefont-ttf whiptail make gcc -y
+sudo apt install python3-pil python3-smbus python3-dateutil -y
 git clone --depth=1 https://github.com/PiSupply/PaPiRus.git
 cd PaPiRus
 sudo python3 setup.py install
@@ -217,9 +216,8 @@ sudo reboot
 Reconnect and install Python 3 libraries:
 
 ```
-sudo apt-get update
-sudo apt-get install python3-pip python3-pil python3-numpy
-sudo apt install python3-rpi.gpio python3-spidev
+sudo apt update
+sudo apt install python3-numpy python3-rpi.gpio python3-spidev
 ```
 
 Download the Waveshare repo in your home dir:
@@ -265,7 +263,7 @@ cp sample_data.json data.json
 
 This should display a sample based on the sample data included in the repo.
 
-<a name="netatmo"></a>
+<a name="netatmoapi"></a>
 
 ## NetAtmo API
 
@@ -278,7 +276,7 @@ Then on your computer, go to https://dev.netatmo.com/apps/, authenticate with yo
 You now need to authorize the app to access your NetAtmo data:
 
 - Under _Token generator_, select the **read_station** scope and click **Generate Token**.
-- It takes a while, but you will get a page where you have to authorize your app to access to your data.
+- It might take a while, and you will get a page where you have to _authorize_ your app to access to your data.
 - Click **Yes I accept**. You now have a new _Access Token_ and a new _Refresh Token_, that you can copy to your clipboard by clicking on them.
 
 Once you have all these values,
@@ -306,12 +304,7 @@ Edit the `token.json` file with your tokens:
 ```json
 {
     "access_token": "you Access Token",
-    "refresh_token": "your Refresh Token",
-    "expires_in": 10800,
-    "expire_in": 10800,
-    "scope": [
-        "read_station"
-    ]
+    "refresh_token": "your Refresh Token"
 }
 ```
 
@@ -330,7 +323,7 @@ If `config.json` does not exist, `netatmo.py` creates an empty one and you have 
 
 If `token.json` does not exist, `netatmo.py` creates an empty one and you have to edit it. `token.json` contains the _access token_ for the program to access to your NetAtmo, and the _refresh token_ for the program to renew the _access token_ when it expires (every 3 hours). This file is written by `netatmo.py` every time it refreshes the _access token_. The refresh operation is managed by the program, but the initial tokens have to be generated and validated interactively online (see above).
 
-`netatmo.py`: main module. Every 10 minutes, it calls the [NetAtmo getstationdata API](https://dev.netatmo.com/apidocumentation/weather#getstationsdata) to get the weather station data, stores it to the `data.json` file, and calls `display.py`. It refreshes the access token when it expires.
+`netatmo.py`: main module. Every 10 minutes, it calls the [NetAtmo `getstationdata` API](https://dev.netatmo.com/apidocumentation/weather#getstationsdata) to get the weather station data, stores it to the `data.json` file, and calls `display.py`. It refreshes the access token when it expires.
 
 `display.py`: display module, called by `netatmo.py` every 10 minutes. It reads `data.json` and displays the data on the screen. So if you choose another screen, or wish to change the display, you just have to adapt or rewrite this file. If no supported screen is present, `display.py` draws the image of the display into a `image.bmp` file. See below (`image.bmp`) for an example of display.
 
